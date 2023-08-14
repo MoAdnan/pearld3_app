@@ -1,9 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pearld3_models/pearld3_models.dart';
+import 'package:pearld3_states/blocs.dart';
 import 'package:pearld3_util/pearld3_util.dart';
 import 'package:pearld3_views/pearld3_views.dart';
 import 'package:pearld3_views/src/constants/app_spaces.dart';
+import 'package:pearld3_views/src/views/widget/double_un_tick.dart';
 
 class OrderItemTile extends StatelessWidget {
   int index;
@@ -14,39 +17,71 @@ class OrderItemTile extends StatelessWidget {
       {super.key, this.onTap, required this.index, required this.orderItem});
 
   Widget? get statusIcon {
-    switch (orderItem.status) {
-      case 0:
-        {
-          return const SizedBox(
+    switch(orderItem.status){
+      case 0 : {
+        return SizedBox(
+          height: 20,
+          width: 20,
+        );
+      }
+      break;
+      case 1 : {
+        return SizedBox(
+          height: 20,
+          width: 20,
+          child: Icon(Icons.check,color: Colors.green,),
+        );
+      }
+      break;
+      case 2 : {
+
+        if(orderItem.extraNoteInDouble==0){
+          return SizedBox(
             height: 20,
             width: 20,
+            child: Icon(Icons.close,color: Colors.red,),
           );
         }
-        break;
-      case 1:
-        {
-          return const SizedBox(
+        else
+          {
+            return SizedBox(
+              height: 20,
+              width: 20,
+              child: Icon(Icons.check,color: Colors.red,),
+            );
+          }
+
+      }
+      break;
+      case 3 : {
+        return SizedBox(
+          height: 20,
+          width: 20,
+          child: Icon(Icons.done_all,color: Colors.green,),
+        );
+      }
+      break;
+      case 4 : {
+        if(orderItem.extraNoteInDouble==0){
+          return SizedBox(
             height: 20,
-            width: 20,
-            child: Icon(
-              Icons.check,
-              color: Colors.green,
-            ),
+            width:  20,
+            child: DoubleCross(),
           );
         }
-        break;
-      case 2:
-        {
-          return const SizedBox(
-            height: 20,
-            width: 20,
-            child: Icon(
-              Icons.close,
-              color: Colors.red,
-            ),
-          );
-        }
+        else
+          {
+            return SizedBox(
+              height: 20,
+              width: 20,
+              child: Icon(Icons.done_all,color: Colors.red,),
+            );
+          }
+
+
+      }
     }
+
   }
 
   @override
@@ -77,7 +112,7 @@ class OrderItemTile extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  statusIcon != null ? statusIcon! : const SizedBox()
+                  statusIcon!= null ? statusIcon! : const SizedBox()
                 ],
               ),
               kHeight16,
@@ -107,8 +142,8 @@ class OrderItemTile extends StatelessWidget {
                           width: 50,
                           child: Text(
                             //todo
-                            '${orderItem.quantity.toStringAsFixed(3)}',
-                            textAlign:context.locale.languageCode == 'en' ? TextAlign.right : TextAlign.left,
+                            '${orderItem.qtyText} ',
+                            textAlign:context.locale.languageCode == 'en' ? TextAlign.end : TextAlign.end,
                             style: context.bodyLarge!
                                 .copyWith(fontWeight: FontWeight.bold),
                           )),

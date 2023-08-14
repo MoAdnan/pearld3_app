@@ -10,8 +10,16 @@ class OrderModel {
   String? rightLeafUID;
   String? statusName;
   String? ohUID;
+  String customerName;
+  double netQty;
+  double netTotal;
+  num progress;
 
   OrderModel({
+    required this.customerName,
+    required this.netQty,
+    required this.netTotal,
+    required this.progress,
     required this.uid,
     required this.docNumber,
     required this.entryDate,
@@ -31,6 +39,10 @@ class OrderModel {
 
   Map<String, dynamic> toJson() {
     return {
+      'progress': progress,
+      'netQty': netQty,
+      'netTotal': netTotal,
+      'customerName': customerName,
       'ohUID': ohUID,
       'uid': uid,
       'docNumber': docNumber,
@@ -53,6 +65,10 @@ class OrderModel {
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     return OrderModel(
+      progress: json['progress'],
+      netTotal: json['netTotal'],
+      netQty: json['netQty'],
+      customerName: json['customerName'],
       ohUID: json['ohUID'],
       uid: json['uid'],
       docNumber: json['docNumber'],

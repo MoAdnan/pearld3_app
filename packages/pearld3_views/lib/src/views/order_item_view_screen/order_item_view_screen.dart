@@ -25,7 +25,20 @@ class OrderItemViewScreen extends StatelessWidget {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   void _saveOrder(BuildContext context) {
     if (isChecked.value) {
-      context.read<OrderViewBloc>().add(SaveOrderEvent());
+      context.showAlert(
+          title: 'save_order'.tr(),
+          confirmText: 'yes'.tr(),
+          cancelText: 'no'.tr(),
+          onConfirm: () {
+            context.read<OrderViewBloc>().add(SaveOrderEvent());
+            context.pop();
+          },
+          onCancel: () {
+            context.pop();
+          },
+        buttonTextStyle:
+        context.buttonTextStyle.copyWith(color: context.primaryColor),
+        titleStyle: context.titleMedium!.copyWith(fontWeight: FontWeight.bold),);
     } else {
       context.showWarningSnackBar('picked_alert'.tr());
     }
@@ -74,25 +87,40 @@ class OrderItemViewScreen extends StatelessWidget {
     }
   }
 
+  void _leaveAlert(BuildContext context) {
+    final loginState = context.read<LoginBloc>().state;
+
+    final orderViewState = context.read<OrderViewBloc>().state;
+
+    if (orderViewState is OrderViewLoaded &&
+        orderViewState.order.status ==
+            loginState.credential!.userCredential!.deviceSetting!
+                    .productCheckStartingStatus! +
+                1) {
+      context.showAlert(
+        title: 'page_leave_title'.tr(),
+        cancelText: 'no'.tr(),
+        onCancel: () => context.pop(),
+        confirmText: 'yes'.tr(),
+        onConfirm: () {
+          context.pop();
+          context.pop();
+          context.read<OrderViewBloc>().add(ClearOrderViewEvent());
+        },
+        buttonTextStyle:
+            context.buttonTextStyle.copyWith(color: context.primaryColor),
+        titleStyle: context.titleMedium!.copyWith(fontWeight: FontWeight.bold),
+      );
+    } else {
+      context.pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        context.showAlert(
-          title: 'page_leave_title'.tr(),
-          cancelText: 'no'.tr(),
-          onCancel: () => context.pop(),
-          confirmText: 'yes'.tr(),
-          onConfirm: () {
-            context.pop();
-            context.pop();
-            context.read<OrderViewBloc>().add(ClearOrderViewEvent());
-          },
-
-
-            buttonTextStyle: context.buttonTextStyle.copyWith(color: context.primaryColor ),
-        titleStyle:    context.titleMedium!.copyWith(fontWeight: FontWeight.bold),
-        );
+        _leaveAlert(context);
         return false;
       },
       child: Scaffold(
@@ -138,7 +166,7 @@ class OrderItemViewScreen extends StatelessWidget {
                       .add(LoadOrderEvent(dateTime: DateTime.now()));
                   context.pop();
                 } else if (state is OrderViewLoaded &&
-                    state.unPickedItems.isNotEmpty) {
+                    state.unPickedItemsForPicker.isNotEmpty) {
                   isChecked.value = false;
                 }
               },
@@ -166,10 +194,11 @@ class OrderItemViewScreen extends StatelessWidget {
                     child: ListView.builder(
                         itemBuilder: (context, index) {
                           OrderItemModel orderItem = state.searchResults[index];
-                          return  OrderItemTile(
+                          return OrderItemTile(
                             orderItem: orderItem,
                             onTap: () {
-                              _onShowItem(_scaffoldKey.currentContext!, orderItem);
+                              _onShowItem(
+                                  _scaffoldKey.currentContext!, orderItem);
                             },
                             index: index,
                           );
@@ -216,12 +245,28 @@ class OrderItemViewScreen extends StatelessWidget {
                             activeColor: context.primaryColor,
                             value: value,
                             onChanged: (value) {
-                              if (state.order.status == 31) {
-                                if (state.unPickedItems.isEmpty) {
-                                  isChecked.value = value;
+                              final starting_status = context
+                                  .read<LoginBloc>()
+                                  .state
+                                  .credential!
+                                  .userCredential!
+                                  .deviceSetting!
+                                  .productCheckStartingStatus;
+                              if (state.order.status == starting_status! + 1) {
+                                if (starting_status == 30) {
+                                  if (state.unPickedItemsForPicker.isEmpty) {
+                                    isChecked.value = value;
+                                  } else {
+                                    context.showWarningSnackBar(
+                                        '${state.unPickedItemsForPicker.length} ${"items_remaining".tr()}');
+                                  }
                                 } else {
-                                  context.showWarningSnackBar(
-                                      '${state.unPickedItems.length} ${"items_remaining".tr()}');
+                                  if (state.unPickedItemsForChecker.isEmpty) {
+                                    isChecked.value = value;
+                                  } else {
+                                    context.showWarningSnackBar(
+                                        '${state.unPickedItemsForChecker.length} ${"items_remaining".tr()}');
+                                  }
                                 }
                               } else {
                                 context.showWarningSnackBar('saved_order'.tr());

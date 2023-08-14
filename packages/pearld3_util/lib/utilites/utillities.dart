@@ -71,6 +71,8 @@ class Utilities {
     // continue accessing the position of the device.
     final postion = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
+
+
     return Right(postion);
   }
 
@@ -84,7 +86,12 @@ class Utilities {
       AndroidDeviceInfo androidInfo = await _deviceInfo.androidInfo;
 
       deviceId = androidInfo.id;
+      //rayees
      // deviceId = "SE1A.211212.001.B1";
+      //checker
+      // deviceId = "QKQ1.191014.001";
+      //picker
+      deviceId = "QP1A.190711.020";
     } else if (Platform.isIOS) {
       IosDeviceInfo iosInfo = await _deviceInfo.iosInfo;
       deviceId = iosInfo.identifierForVendor;

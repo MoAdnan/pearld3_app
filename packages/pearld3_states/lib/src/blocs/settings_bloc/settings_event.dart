@@ -8,7 +8,11 @@ abstract class SettingsEvent extends Equatable {
 class LoadSettingsEvent extends SettingsEvent {}
 
 class ResetEvent extends SettingsEvent {}
-
+class ConnectBluetooth extends SettingsEvent{
+  BuildContext context;
+  BlueDevice blueDevice;
+  ConnectBluetooth({required this.blueDevice,required this.context});
+}
 class ChangeSettingsEvent extends SettingsEvent {
   SettingsState settingsState;
 
@@ -19,3 +23,20 @@ class ChangeSettingsEvent extends SettingsEvent {
   @override
   List<Object> get props => [settingsState];
 }
+class ChangePrinterEvent extends SettingsEvent{
+  BuildContext context;
+
+
+  ChangePrinterEvent({
+    required this.context,
+
+  });
+}
+class TestPrintTicketEvent extends SettingsEvent{
+  BuildContext context;
+
+  TestPrintTicketEvent({
+    required this.context,
+  });
+}
+

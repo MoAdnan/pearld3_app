@@ -26,22 +26,62 @@ class ProductBottomSheet extends StatelessWidget {
   // Uint8List image;
   OrderItemModel item;
   bool itemISPicked;
+
   // bool isImageLoading;
 
   String get pickButtonTitle {
+    switch (item.status) {
+      case 0:
+        {
+          return 'pick'.tr();
+        }
+        break;
+      case 1:
+        {
+          return 'unpick'.tr();
+        }
+        break;
+      case 3:
+        {}
+        break;
+    }
+
     if (item.status == 0) {
       return 'pick'.tr();
     } else {
       return 'unpick'.tr();
     }
   }
+  String get checkButtonTitle {
+    switch (item.status) {
+      case 0:
+        {
 
+        }
+        break;
+      case 1:
+        {
+          return 'check'.tr();
+        }
+        break;
+      case 3:
+        {
+          return 'uncheck'.tr();
+        }
+        break;
+    }
 
-
+    if (item.status == 0) {
+      return 'pick'.tr();
+    } else {
+      return 'unpick'.tr();
+    }
+  }
+  num count = 0;
+  bool isCountAndMaxEqual = false;
   void _updateStatus(
       BuildContext context, int nextStatus, String message) async {
-
-    context.read<OrderViewBloc>().add(PickItemEvent(
+    context.read<OrderViewBloc>().add(UpdateItemEvent(
           newStatus: nextStatus,
           context: context,
           item: item,
@@ -50,8 +90,8 @@ class ProductBottomSheet extends StatelessWidget {
   }
 
   ValueNotifier<bool> isChecked = ValueNotifier<bool>(false);
-  TextEditingController messageController = TextEditingController();
-
+  TextEditingController countController = TextEditingController();
+  int? productCheckStartingStatus;
   getImage(BuildContext context) async {
     final loginState = rootContext.read<LoginBloc>().state;
     if (loginState is LoggedIn) {
@@ -67,6 +107,18 @@ class ProductBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final checkingStatus = context
+        .read<LoginBloc>()
+        .state
+        .credential!
+        .userCredential!
+        .deviceSetting!
+        .checkStatusList;
+  productCheckStartingStatus =  context.read<LoginBloc>().state.credential!.userCredential!.deviceSetting!.productCheckStartingStatus ;
+
+
+    countController.text = item.quantity.toString();
     final orderState = context.read<OrderViewBloc>().state;
     if (orderState is OrderViewLoaded) {
       return Container(
@@ -116,18 +168,22 @@ class ProductBottomSheet extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      orderState.order.status != 32
+                      (orderState.order.status != context.read<LoginBloc>().state.credential!.userCredential!.deviceSetting!.productCheckEndingStatus)
                           ? ValueListenableBuilder(
                               valueListenable: isChecked,
                               builder: (context, value, child) {
                                 return Expanded(
                                   child: Align(
-                                    alignment:context.locale.languageCode == 'en' ? Alignment.centerLeft : Alignment.centerRight,
+                                    alignment:
+                                        context.locale.languageCode == 'en'
+                                            ? Alignment.centerLeft
+                                            : Alignment.centerRight,
                                     child: SwitchWidget(
                                       activeColor: context.primaryColor,
                                       value: value,
                                       onChanged: (value) {
-                                        if (item.status != 2) {
+                                        final checkLIst = context.read<LoginBloc>().state.credential!.userCredential!.deviceSetting!.checkStatusList;
+                                        if (item.status != checkLIst.last) {
                                           isChecked.value = value;
                                         }
                                       },
@@ -146,7 +202,9 @@ class ProductBottomSheet extends StatelessWidget {
                       Expanded(
                         child: Text(
                           item.routeCode,
-                          textAlign:context.locale.languageCode=='en' ? TextAlign.right : TextAlign.left,
+                          textAlign: context.locale.languageCode == 'en'
+                              ? TextAlign.right
+                              : TextAlign.left,
                           style: context.displaySmall3,
                         ),
                       )
@@ -156,35 +214,54 @@ class ProductBottomSheet extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      item.status != 2 && orderState.order.status != 32
+                      (item.status != 2 && orderState.order.status != 32) &&
+                              (item.status != 4 &&
+                                  orderState.order.status != 34)
                           ? ValueListenableBuilder(
-                        valueListenable: isChecked,
-                            builder: (context,value,_) {
-                              return !isChecked.value ? BottomSheetButtonWidget(
-                                  buttonName: pickButtonTitle,
-                                  color: Colors.green,
-                                  onButtonClick: () {
-                                    if (item.status == 0) {
-                                      // item is currently unpicked
-                                      _updateStatus(context, 1, '');
-                                      // item picked
-                                      context.pop();
-                                    } else {
-                                      // item is currently picked
-                                      _updateStatus(context, 0, '');
-                                      // item unpicked
-                                      context.pop();
-                                    }
-                                  },
-                                ): const SizedBox(width: 140,height: 36,);
-                            }
-                          )
+                              valueListenable: isChecked,
+                              builder: (context, value, _) {
+                                return !isChecked.value
+                                    ? BottomSheetButtonWidget(
+                                        buttonName:productCheckStartingStatus==32 ? checkButtonTitle : pickButtonTitle,
+                                        color: Colors.green,
+                                        onButtonClick: () {
+                                          final checkingStatus = context
+                                              .read<LoginBloc>()
+                                              .state
+                                              .credential!
+                                              .userCredential!
+                                              .deviceSetting!
+                                              .checkStatusList;
+
+                                          if (item.status ==
+                                              checkingStatus.first) {
+                                            // item is currently unpicked
+                                            _updateStatus(
+                                                context, checkingStatus[1], '');
+                                            // item picked
+                                            context.pop();
+                                          } else {
+                                            // item is currently picked
+                                            _updateStatus(context,
+                                                checkingStatus.first, '');
+                                            // item unpicked
+                                            context.pop();
+                                          }
+                                        },
+                                      )
+                                    : const SizedBox(
+                                        width: 140,
+                                        height: 36,
+                                      );
+                              })
                           : const SizedBox(),
                       Expanded(
                         child: Text(
                           //todo
                           item.quantity.toStringAsFixed(3),
-                          textAlign:context.locale.languageCode=='en' ? TextAlign.right : TextAlign.left,
+                          textAlign: context.locale.languageCode == 'en'
+                              ? TextAlign.right
+                              : TextAlign.left,
                           style: context.bodyLarge!
                               .copyWith(color: Colors.black, fontSize: 20),
                         ),
@@ -195,23 +272,28 @@ class ProductBottomSheet extends StatelessWidget {
                   ValueListenableBuilder(
                     valueListenable: isChecked,
                     builder: (context, value, child) {
-                      return item.status != 2 && isChecked.value
+
+                      return item.status != checkingStatus.last && isChecked.value
                           //out of stock button is in inside InputExtraNotesWidget
                           ? BottomSheetFooter(
-                              controller: messageController,
+                              onChange: (val) {
+                                count = val;
+                              },
+                          item: item,
                               onButtonClick: () {
                                 // item set as no stock
-                                _updateStatus(
-                                    context, 2, messageController.text);
+
+
+                                _updateStatus(context, checkingStatus.last,
+                                    count.toString());
                               })
                           : const SizedBox();
                     },
                   ),
-                  item.status == 2
+                  item.status == checkingStatus.last
                       //no stock showing details
                       ? ShowExtraNotesWidget(
                           hintText: item.extraNote,
-
                         )
                       : const SizedBox()
                 ],

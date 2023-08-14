@@ -9,7 +9,7 @@ class OrderListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  BlocBuilder<OrderBloc, OrderState>(
+    return BlocBuilder<OrderBloc, OrderState>(
       builder: (context, state) {
         if (state is OrderLoaded) {
           return Flexible(
@@ -18,7 +18,8 @@ class OrderListWidget extends StatelessWidget {
               physics: const BouncingScrollPhysics(),
               itemBuilder: (context, index) {
                 return OrderTile(
-                  order: state.orders[index], index: index,
+                  order: state.orders[index],
+                  index: index,
                 );
               },
               separatorBuilder: (context, index) => const Divider(thickness: 2),

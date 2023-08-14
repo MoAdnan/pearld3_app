@@ -12,6 +12,7 @@ class SettingsState extends Equatable {
   factory SettingsState.initial() {
     return SettingsState(
         appSettingsModel: AppSettingsModel(
+            blueDevice:null,
             pinForQr: 1000,
             printMode: "Direct",
             continuePop: false,

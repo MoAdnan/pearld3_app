@@ -26,7 +26,7 @@ class RemoveMeBottomSheet extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    "remove_warning_text".tr()+" :",
+                    "${"remove_warning_text".tr()} :",
                  style: context.bodyExtraSmall!.copyWith(fontSize: 15), ),
                 ),
                 kHeight28,

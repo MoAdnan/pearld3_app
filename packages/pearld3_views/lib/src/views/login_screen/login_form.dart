@@ -16,10 +16,10 @@ class LoginForm extends StatelessWidget {
   FocusNode passwordNode = FocusNode();
   final loginBloc = getItInstance<LoginBloc>();
 
-  final _formkey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
   void login(BuildContext context) async {
-    if (_formkey.currentState!.validate()) {
+    if (_formKey.currentState!.validate()) {
       loginBloc.add(Login(
           username: usernameController.text,
           password: passwordController.text,
@@ -39,7 +39,7 @@ class LoginForm extends StatelessWidget {
       isRemember.value = true;
     }
     return Form(
-      key: _formkey,
+      key: _formKey,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

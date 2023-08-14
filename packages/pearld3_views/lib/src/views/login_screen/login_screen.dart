@@ -16,7 +16,7 @@ class LoginScreen extends StatelessWidget {
     context.showAlert(
       cancelText: 'no'.tr(),
       confirmText: 'yes'.tr(),
-      title: 'Do you want to exit PearlD3 ?',
+      title: 'exit_app'.tr(),
       onCancel: () => context.pop(),
       onConfirm: () {
        context.exitApp();

@@ -98,12 +98,19 @@ extension BuildContextEntension<T> on BuildContext {
   TextStyle? get titleLarge => Theme.of(this).textTheme.titleLarge;
 
   TextStyle? get titleMedium => Theme.of(this).textTheme.titleMedium;
+  TextStyle? get titleMedium1 => Theme.of(this).textTheme.bodyLarge!.copyWith(color: Colors.black, fontSize: 22);
+  TextStyle? get titleMedium2 => Theme.of(this).textTheme.bodyMedium!.copyWith(color: Colors.black, fontSize: 15);
+  TextStyle? get titleMedium2Red => Theme.of(this).textTheme.bodyMedium!.copyWith(color: Colors.red, fontSize: 15,);
+  TextStyle? get titleMedium2Green => Theme.of(this).textTheme.bodyMedium!.copyWith(color: Colors.green, fontSize: 15,);
+  TextStyle? get titleMedium2Bold => Theme.of(this).textTheme.bodyMedium!.copyWith(color: Colors.black, fontSize: 15,fontWeight: FontWeight.w600);
   TextStyle? get titleSmallRed =>
       Theme.of(this).textTheme.titleSmall!.copyWith(color: Colors.red);
 
   TextStyle? get titleSmall => Theme.of(this).textTheme.titleSmall;
   TextStyle? get hintSmall =>
       const TextStyle(color: Colors.black54, fontSize: 13);
+  TextStyle? get hintLarge =>
+      Theme.of(this).textTheme.bodyLarge!.copyWith(color: colorGrey, fontSize: 18);
   TextStyle? get highlightSmall =>
       const TextStyle(color: Colors.blue, fontSize: 13);
 

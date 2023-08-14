@@ -1,9 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:order_repository/order_repository.dart';
 import 'package:pearld3_models/pearld3_models.dart';
+import 'package:pearld3_states/di.dart';
 import '../../../pearld3_states.dart';
 
 part 'order_event.dart';
@@ -21,7 +23,8 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       : super(OrderInitial()) {
     on<LoadOrderEvent>(_loadOrder);
     on<SelectOrderEvent>(_selectOrder);
-    on<LoadNewOrderEvent>(_loadNewOrder);
+    on<LoadNewOrderForPickerEvent>(_loadNewOrderForPicker);
+    on<LoadNewOrderForCheckerEvent>(_loadNewOrderForChecker);
     on<SearchOrderEvent>((event, emit) => _searchOrder(event, emit));
 
   }
@@ -63,7 +66,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       dblInputs = DbInputs(
           reqdate: date,
           outletUID: loginState.credental.userCredential!.outletUID!,
-          deviceID: 30,
+          deviceID: loginState.credental.userCredential!.deviceSetting!.productCheckStartingStatus,
           refUID: loginState.credental.userCredential!.outletUID!,
           reportKey: "",
           paperWidth: 0,
@@ -90,9 +93,13 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     if (currentState is OrderLoaded) {
       emit(currentState.copyWith(currentOrder: event.order));
     }
+    else
+      {
+
+      }
   }
 
-  _loadNewOrder(LoadNewOrderEvent event, Emitter emit) async {
+  _loadNewOrderForPicker(LoadNewOrderForPickerEvent event, Emitter emit) async {
     final currentState = state;
     if (currentState is OrderLoaded) {
       emit(currentState.copyWith(currentOrder: null));
@@ -115,13 +122,13 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
      dblInputs = DbInputs(
          reqdate: "2023-07-19 10:51:22.042853",
          outletUID: loginState.credental.userCredential!.outletUID!,
-         deviceID: 30,
+         deviceID: loginState.credental.userCredential!.deviceSetting!.productCheckStartingStatus,
          refUID: loginState.credental.userCredential!.outletUID!,
          reportKey: "",
          paperWidth: 0,
          pdfMode: false);
 
-     final orderEither = await orderRepository.getNewOrder(
+     final orderEither = await orderRepository.getNewOrderForPicker(
          dbInputs: dblInputs,
          baseUrl: configState.config!.serviceurl!,
          token: loginState.credental.token!);
@@ -135,5 +142,52 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
 
 
     }
+  }
+  _loadNewOrderForChecker(LoadNewOrderForCheckerEvent event, Emitter emit) async {
+    final currentState = state;
+    if (currentState is OrderLoaded) {
+      emit(currentState.copyWith(currentOrder: null));
+    }
+    final loginState = loginBloc.state;
+    final configState = configBloc.state;
+
+    if (loginState is LoggedIn && configState is ConfigLoaded) {
+      final currentState = state;
+      // if(currentState is OrderLoaded){
+      //   emit(OrderLoading(searchResult: currentState.searchResult,orders: currentState.orders));
+      // }
+      // else
+      // {
+      //   emit(OrderLoading(searchResult: [],orders: []));
+      // }
+
+print('dbl id : ${event.orderId}');
+
+      dblInputs = DbInputs(
+          reqdate: "2023-07-19 10:51:22.042853",
+          outletUID: loginState.credental.userCredential!.outletUID!,
+          deviceID: loginState.credental.userCredential!.deviceSetting!.productCheckStartingStatus,
+          refUID: event.orderId,
+          reportKey: "",
+          paperWidth: 0,
+          pdfMode: false);
+
+      final orderEither = await orderRepository.getNewOrderForChecker(
+          dbInputs: dblInputs,
+          baseUrl: configState.config!.serviceurl!,
+          token: loginState.credental.token!);
+      orderEither.fold((l) {
+        emit(OrderError(error: l,searchResult: currentState.searchResult,orders: currentState.orders));
+
+      }, (r) {
+
+
+        add(SelectOrderEvent(order: r));
+        add(LoadOrderEvent(dateTime: DateTime.now()));
+      });
+
+
+    }
+
   }
 }

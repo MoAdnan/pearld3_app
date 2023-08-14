@@ -267,14 +267,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         cancelText: 'cancel'.tr(),
                                         confirmText: 'ok'.tr(),
                                         onCancel: () =>
-                                            Navigator.pop(context, 'Cancel'),
+                                            Navigator.pop(context),
                                         onConfirm: () {
                                           currentLanguage.value =
                                               selectedValue!;
                                           context.setLocale(currentLanguage
                                               .value!
                                               .toLacale());
-                                          Navigator.pop(context, 'OK');
+                                          Navigator.pop(context);
                                         },
 
                                   buttonTextStyle: context.buttonTextStyle.copyWith(color: context.primaryColor ),

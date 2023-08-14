@@ -1,25 +1,82 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:pearld3_models/pearld3_models.dart';
+import 'package:pearld3_util/pearld3_util.dart';
 
 import 'bottom_sheet_button.dart';
+import 'count_button.dart';
 import 'extra_notes_field.dart';
 
 class BottomSheetFooter extends StatelessWidget {
-  TextEditingController controller;
+  OrderItemModel item;
+
+
+  Function(num)? onChange;
+
   Function() onButtonClick;
   BottomSheetFooter(
-      {super.key, required this.controller, required this.onButtonClick});
-
+      {super.key,
+     required this.item,
+      required this.onButtonClick,
+      this.onChange});
+  ValueNotifier<num> count = ValueNotifier(0);
   @override
   Widget build(BuildContext context) {
+    count.value = item.extraNoteInDouble!=0?item.extraNoteInDouble:item.quantity;
     return Row(
       children: [
-        BottomSheetButtonWidget(
-          onButtonClick: onButtonClick,
-          buttonName: 'stock'.tr(),
-          color: Colors.red,
+        ValueListenableBuilder(valueListenable: count,
+          builder: (context,val,_) {
+            return count.value != item.quantity ? BottomSheetButtonWidget(
+              onButtonClick: onButtonClick,
+              buttonName: 'update'.tr(),
+              color:  Colors.red,
+            ) : SizedBox(width: 140,
+              height: 36,
+            child: Center(child: Text('available_qty'.tr(),style: context.titleLarge,)),);
+          }
         ),
-        ExtraNotesField(controller: controller),
+        Expanded(
+          child: Align(
+            alignment: context.locale.languageCode == 'en'
+                ? Alignment.centerRight
+                : Alignment.centerLeft,
+            child: SizedBox(
+              height: 37,
+              width: 140,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  CountButton(
+                      icon: Icons.remove,
+                      onTap: () {
+                        if (count.value > 0) {
+                          count.value--;
+                        }
+                      }),
+                  ValueListenableBuilder(
+                    valueListenable: count,
+                    builder: (context, value, child) {
+                      onChange!(value);
+                      return Text(
+                        value.toString(),
+                        style: context.titleLarge!
+                            .copyWith(fontSize: 25, color: count.value != item.quantity ?Colors.red :Colors.black),
+                      );
+                    },
+                  ),
+                  CountButton(
+                      onTap: () {
+                        if (count.value < item.quantity) {
+                          count.value++;
+                        }
+                      },
+                      icon: Icons.add)
+                ],
+              ),
+            ),
+          ),
+        )
       ],
     );
   }

@@ -10,17 +10,18 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-            elevation: 6,
-            leading: leading,
-            backgroundColor: Colors.white,
-            title: Padding(
-              padding: context.locale.languageCode == 'ar' ? EdgeInsets.only(right: 28.0) : EdgeInsets.zero,
-              child: searchBar ?? const SizedBox(),
-            ),
-            actions:  actions,
-            centerTitle: true,
-          );
-
+      elevation: 4,
+      leading: leading,
+      backgroundColor: Colors.white,
+      title: Padding(
+        padding: context.locale.languageCode == 'ar'
+            ? EdgeInsets.only(right: 28.0)
+            : EdgeInsets.zero,
+        child: searchBar ?? const SizedBox(),
+      ),
+      actions: actions,
+      centerTitle: true,
+    );
   }
 
   @override

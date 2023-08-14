@@ -57,7 +57,7 @@ class AuthenticationRepository {
         });
       });
     } else {
-      return Left(Status(message: 'not configured', code: 0));
+      return Left(Status(message: 'Not configured', code: 0));
     }
   }
 

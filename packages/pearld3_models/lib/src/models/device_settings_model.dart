@@ -70,12 +70,14 @@ class DeviceSettingModel {
   bool? autoFlowReceiptAmount;
   bool? includeImageDuringOpeningEntry;
   int? defaultSearchModule;
+  bool? userBasedOrders;
 
   int? productCheckStartingStatus;
   int? productCheckEndingStatus;
   String? productCheckStatusList;
   DeviceSettingModel(
-      {this.deviceUID,
+      {this.userBasedOrders,
+      this.deviceUID,
       this.productCheckEndingStatus,
       this.productCheckStatusList,
       this.productCheckStartingStatus,
@@ -150,8 +152,13 @@ class DeviceSettingModel {
       this.includeImageDuringOpeningEntry,
       this.defaultSearchModule});
 
+  List<int> get checkStatusList {
+    return productCheckStatusList!.split(",").map(int.parse).toList();
+  }
+
   DeviceSettingModel.fromJson(Map<String, dynamic> json) {
     productCheckStartingStatus = json['productCheckStartingStatus'];
+    userBasedOrders = json['userBasedOrders'];
     productCheckEndingStatus = json['productCheckEndingStatus'];
     productCheckStatusList = json['productCheckStatusList'];
 
@@ -235,8 +242,8 @@ class DeviceSettingModel {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
 
-
     data['productCheckStartingStatus'] = this.productCheckStartingStatus;
+    data['userBasedOrders'] = this.userBasedOrders;
     data['productCheckEndingStatus'] = this.productCheckEndingStatus;
     data['productCheckStatusList'] = this.productCheckStatusList;
 

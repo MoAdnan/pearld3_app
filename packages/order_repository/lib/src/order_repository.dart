@@ -25,12 +25,12 @@ class OrderRepository {
     });
   }
 
-  Future<Either<Status, OrderModel>> getNewOrder(
+  Future<Either<Status, OrderModel>> getNewOrderForPicker(
       {required DbInputs dbInputs,
       required String token,
       required String baseUrl}) async {
     _orderService = OrderService(baseUrl: baseUrl, token: token);
-    final response = await _orderService.getNewOrder(body: dbInputs.toMap());
+    final response = await _orderService.getNewOrderForPicker(body: dbInputs.toMap());
     return response.fold((l) {
 
 
@@ -39,6 +39,25 @@ class OrderRepository {
 
 
       final order = OrderModel.fromJson(r);
+
+      return Right(order);
+    });
+  }
+  Future<Either<Status, OrderModel>> getNewOrderForChecker(
+      {required DbInputs dbInputs,
+        required String token,
+        required String baseUrl}) async {
+    _orderService = OrderService(baseUrl: baseUrl, token: token);
+    final response = await _orderService.getNewOrderForChecker(body: dbInputs.toMap());
+    return response.fold((l) {
+
+
+      return Left(Status.fromJson(l));
+    }, (r) {
+
+
+      final order = OrderModel.fromJson(r);
+
 
       return Right(order);
     });

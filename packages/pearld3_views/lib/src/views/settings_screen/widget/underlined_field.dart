@@ -29,7 +29,7 @@ class UnderLinedField extends StatelessWidget {
                 controller: controler,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                    focusedBorder: UnderlineInputBorder(
+                    focusedBorder: const UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.blue),
                     ),
                     enabledBorder: UnderlineInputBorder(
@@ -45,7 +45,7 @@ class UnderLinedField extends StatelessWidget {
             IconWidget(icon: icon, color: iconColor, onTap: onChanged)
           ],
         );
-        ;
+
       },
     );
   }

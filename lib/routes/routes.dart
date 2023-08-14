@@ -4,8 +4,6 @@ import 'package:pearld3_states/pearld3_states.dart';
 import 'package:pearld3_views/pearld3_views.dart';
 
 class AppRoutes {
-
-
   static GoRouter get routes {
     return GoRouter(
       initialLocation: Routes.ROOT,
@@ -19,10 +17,10 @@ class AppRoutes {
         GoRoute(
           path: Routes.ROOT,
           redirect: (context, state) {
-            if(context.read<ConfigBloc>().state is ConfigLoaded){
+            // it check the app is configured or not
+            if (context.read<ConfigBloc>().state is ConfigLoaded) {
               return Routes.LOGIN;
             }
-
           },
           builder: (context, state) => const ConfigureScreen(),
           pageBuilder: (context, state) => fadeRouteTransition(

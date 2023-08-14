@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pearld3_models/pearld3_models.dart';
@@ -21,6 +22,8 @@ class HomeScreen extends StatelessWidget {
   FocusNode focusNode = FocusNode();
 
   Future<bool> onPop(BuildContext context) async {
+    // this method return alert box
+
     context.showAlert(
       cancelText: 'no'.tr(),
       confirmText: 'yes'.tr(),
@@ -29,13 +32,15 @@ class HomeScreen extends StatelessWidget {
       onConfirm: () {
         context.read<LoginBloc>().add(LogOut(context));
       },
-
-        buttonTextStyle: context.buttonTextStyle.copyWith(color: context.primaryColor ),
-    titleStyle:    context.titleMedium!.copyWith(fontWeight: FontWeight.bold),);
+      buttonTextStyle:
+          context.buttonTextStyle.copyWith(color: context.primaryColor),
+      titleStyle: context.titleMedium!.copyWith(fontWeight: FontWeight.bold),
+    );
     return false;
   }
 
   void _selectOrder(BuildContext context, OrderModel? order) {
+    //select order and navigate to OrderView Screen
     context
         .read<OrderViewBloc>()
         .add(SelectOrderAndLoadItemsEvent(order: order!));
@@ -44,19 +49,70 @@ class HomeScreen extends StatelessWidget {
     context.push(Routes.ORDERVIEW);
   }
 
-  void _getNewOrder(BuildContext context) {
+  Future<void> scanBarcode(BuildContext context) async {
+    // this method sacn qr code
+    String barcodeScanRes;
+
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          '#ff6666', 'Cancel', true, ScanMode.BARCODE);
+    } on PlatformException {
+      barcodeScanRes = 'Failed to get platform version.';
+    }
+
+    // Show the bottom sheet with the scanned barcode
+    if (barcodeScanRes != '-1') {
+      // Scanning was successful and a barcode was captured
+
+      _getNewOrderForChecker(context, barcodeScanRes);
+    } else {
+      // Scanning was canceled
+      // You may choose to show a different message or take appropriate action here
+    }
+  }
+
+  _newOrder(BuildContext context) async {
+    // call new order event for picker and checker
+    final userBasedOrders = context
+        .read<LoginBloc>()
+        .state
+        .credential!
+        .userCredential!
+        .deviceSetting!
+        .userBasedOrders;
+    if (userBasedOrders!) {
+      _getNewOrderForPicker(context);
+    } else {
+      scanBarcode(context);
+    }
+  }
+
+  void _getNewOrderForChecker(BuildContext context, String orderID) {
     var orderStream;
-    context.read<OrderBloc>().add(LoadNewOrderEvent());
+    context
+        .read<OrderBloc>()
+        .add(LoadNewOrderForCheckerEvent(orderId: orderID));
 
     orderStream = context.read<OrderBloc>().stream.listen((state) {
-
-
-      if (state is OrderLoaded ) {
-
-        _selectOrder(context, state.orders.first);
+      if (state.currentOrder != null) {
+        _selectOrder(context, state.currentOrder);
+        orderStream.cancel();
+      } else if (state is OrderError) {
+        context.showErrorSnackBar(state.error.message!);
         orderStream.cancel();
       }
-      else if(state is OrderError){
+    });
+  }
+
+  void _getNewOrderForPicker(BuildContext context) {
+    var orderStream;
+    context.read<OrderBloc>().add(LoadNewOrderForPickerEvent());
+
+    orderStream = context.read<OrderBloc>().stream.listen((state) {
+      if (state is OrderLoaded) {
+        _selectOrder(context, state.orders.first);
+        orderStream.cancel();
+      } else if (state is OrderError) {
         context.showErrorSnackBar(state.error.message!);
         orderStream.cancel();
       }
@@ -112,24 +168,22 @@ class HomeScreen extends StatelessWidget {
             ]),
         body: BlocBuilder<OrderBloc, OrderState>(
           builder: (context, state) {
-
-      return AbsorbPointer(
-
-        absorbing: state is OrderLoading,
-        child: ListView.builder(
-          itemCount: state.searchResult.length,
-          itemBuilder: (context, index) {
-            return OrderTile(
-              index: index,
-              order: state.searchResult[index],
-              onTap:  () {
-                SystemChannels.textInput.invokeMethod('TextInput.hide');
-                _selectOrder(context, state.searchResult[index]);
-              },
+            return AbsorbPointer(
+              absorbing: state is OrderLoading,
+              child: ListView.builder(
+                itemCount: state.searchResult.length,
+                itemBuilder: (context, index) {
+                  return OrderTile(
+                    index: index,
+                    order: state.searchResult[index],
+                    onTap: () {
+                      SystemChannels.textInput.invokeMethod('TextInput.hide');
+                      _selectOrder(context, state.searchResult[index]);
+                    },
+                  );
+                },
+              ),
             );
-          },
-        ),
-      );
           },
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -146,7 +200,7 @@ class HomeScreen extends StatelessWidget {
             } else {
               return FloatingActionButton(
                 backgroundColor: context.primaryColor,
-                onPressed: () => _getNewOrder(context),
+                onPressed: () => _newOrder(context),
                 child: const Icon(
                   Icons.add_shopping_cart,
                   color: Colors.white,

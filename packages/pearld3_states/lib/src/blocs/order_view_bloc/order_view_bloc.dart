@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:bloc/bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -25,11 +26,12 @@ class OrderViewBloc extends Bloc<OrderViewEvent, OrderViewState> {
     // on<ItemPickEvent>((event, emit) => _pickItem(event, emit));
     on<SelectOrderAndLoadItemsEvent>((event, emit) => _loadItems(event, emit));
     on<SaveOrderEvent>((event, emit) => _saveOrder(event, emit));
-    on<PickItemEvent>((event, emit) => _pickItem(event, emit));
+    on<UpdateItemEvent>((event, emit) => _pickItem(event, emit));
     on<SearchItemEvent>((event, emit) => _searchItems(event, emit));
     on<ClearOrderViewEvent>((event, emit) => _clearOrderView(event, emit));
   }
-  void _pickItem(PickItemEvent event, Emitter emit) async {
+  void _pickItem(UpdateItemEvent event, Emitter emit) async {
+    print('next Status : ${event.newStatus}');
 
     late Status response;
     final currentState = state;
@@ -38,20 +40,21 @@ class OrderViewBloc extends Bloc<OrderViewEvent, OrderViewState> {
     final dblInputs = DbInputs(
         reqdate: "2023-07-19 10:51:22.042853",
         outletUID: event.item.uid,
-        deviceID: event.newStatus,
+        deviceID: loginstate.credential!.userCredential!.deviceSetting!.productCheckStartingStatus,
         refUID: event.item.uid,
         reportKey: event.item.extraNote,
-        paperWidth: 0,
+        paperWidth: event.newStatus,
         pdfMode: false);
     if (loginstate is LoggedIn &&
         configState is ConfigLoaded &&
         currentState is OrderViewLoaded) {
 
-      if (event.newStatus == 2) {
+
+        if (event.newStatus == loginBloc.state.credential!.userCredential!.deviceSetting!.checkStatusList.last) {
 
 // item set to no stock
-        event.context.showAlert(
-            title: 'Are you sure this item is out of stock?',
+          event.context.showAlert(
+            title: 'out_stock_alert'.tr(),
             onCancel: ()  {
 
               event.context.pop();
@@ -77,31 +80,35 @@ class OrderViewBloc extends Bloc<OrderViewEvent, OrderViewState> {
 
               }
             },
-            confirmText: 'Yes',
-            cancelText: 'No',
-        buttonTextStyle: event.context.buttonTextStyle.copyWith(color: event.context.primaryColor ),
-         titleStyle:    event.context.titleMedium!.copyWith(fontWeight: FontWeight.bold),
-            );
-      } else {
+            confirmText: 'yes'.tr(),
+            cancelText: 'no'.tr(),
+            buttonTextStyle: event.context.buttonTextStyle.copyWith(color: event.context.primaryColor ),
+            titleStyle:    event.context.titleMedium!.copyWith(fontWeight: FontWeight.bold),
+          );
+        } else {
 
-        response = await orderRepository.changeStatus(
-            dbInputs: dblInputs,
-            token: loginstate.credental.token!,
-            baseUrl: configState.config!.serviceurl!);
+          response = await orderRepository.changeStatus(
+              dbInputs: dblInputs,
+              token: loginstate.credental.token!,
+              baseUrl: configState.config!.serviceurl!);
 
-        if (response.code == 200) {
+          if (response.code == 200) {
 
-          add(SelectOrderAndLoadItemsEvent(order: currentState.order));
-          try{
-            event.context.showSuccessSnackBar(response.message!);
-          }catch (e){
-            log('');
-            log('${e} ');
-            log('');
+            add(SelectOrderAndLoadItemsEvent(order: currentState.order));
+            try{
+              event.context.showSuccessSnackBar(response.message!);
+            }catch (e){
+              log('');
+              log('${e} ');
+              log('');
+            }
+
           }
-
         }
-      }
+
+
+
+
 
     }
   }
@@ -114,8 +121,9 @@ _clearOrderView(ClearOrderViewEvent event,Emitter emit){
     final currentState = state;
     if (currentState is OrderViewLoaded) {
       emit(OrderViewLoading());
+      final productCheckStartingStatus = loginBloc.state.credential!.userCredential!.deviceSetting!.productCheckStartingStatus!;
 
-      if (currentState.order.status == 31) {
+      if (currentState.order.status == productCheckStartingStatus!+1) {
         final loginState = loginBloc.state;
         final configState = configBloc.state;
 
@@ -123,7 +131,7 @@ _clearOrderView(ClearOrderViewEvent event,Emitter emit){
           final dblInputs = DbInputs(
               reqdate: DateTime.now().toString(),
               outletUID: currentState.order.rightLeafUID,
-              deviceID: 31,
+              deviceID: productCheckStartingStatus+1,
               refUID: currentState.order.ohUID,
               reportKey: "",
               paperWidth: 0,
@@ -142,7 +150,7 @@ _clearOrderView(ClearOrderViewEvent event,Emitter emit){
         }
       } else {
         emit(
-            OrderViewError(status: Status(message: 'Already saved', code: 32)));
+            OrderViewError(status: Status(message: 'Already saved'.tr(), code: 32)));
         Future.delayed(Duration(seconds: 1)).then((value) {
           add(SelectOrderAndLoadItemsEvent(order: currentState.order));
         });
@@ -179,7 +187,7 @@ _clearOrderView(ClearOrderViewEvent event,Emitter emit){
       final dblInputs = DbInputs(
           reqdate: "2023-07-19 10:51:22.042853",
           outletUID: event.order.rightLeafUID,
-          deviceID: 30,
+          deviceID: loginstate.credental.userCredential!.deviceSetting!.productCheckStartingStatus,
           refUID: event.order.uid,
           reportKey: "",
           paperWidth: 0,
@@ -188,8 +196,11 @@ _clearOrderView(ClearOrderViewEvent event,Emitter emit){
           dbInputs: dblInputs,
           token: loginstate.credental.token!,
           baseUrl: configState.config!.serviceurl!);
+
       response.fold((l) => emit(OrderViewError(status: l)), (r) {
         if (r.isNotEmpty) {
+
+
           emit(OrderViewLoaded(items: r, order: event.order, searchResults: r));
         } else {
           emit(OrderViewEmpty());

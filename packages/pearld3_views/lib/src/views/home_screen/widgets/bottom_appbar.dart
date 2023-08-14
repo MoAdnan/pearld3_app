@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pearld3_states/pearld3_states.dart';
 import 'package:pearld3_util/utilites/context_extensions.dart';
 
+import '../../widget/double_un_tick.dart';
+
 class CustomBottomAppBar extends StatelessWidget {
   const CustomBottomAppBar({super.key});
 
@@ -16,26 +18,26 @@ class CustomBottomAppBar extends StatelessWidget {
       notchMargin: 5,
       child: BlocBuilder<OrderBloc, OrderState>(
         builder: (context, state) {
-
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  RichText(
-                      text: TextSpan(
-                          text: 'net'.tr(),
-                          style: context.titleSmall,
-                          children: [
-                        TextSpan(
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                RichText(
+                    text: TextSpan(
+                        text: 'net'.tr(),
+                        style: context.titleSmall,
+                        children: [
+                      TextSpan(
                           //todo
-                            text: " :  ${state.netWeight.toStringAsFixed(3)}  ${"kg".tr()}",
-                            style: context.titleSmallRed)
-                      ])),
-                  Text("${state.pickedOrdersCount} ${"total_order".tr()}")
-                ],
-              ),
-            );
+                          text:
+                              " :  ${state.netWeight.toStringAsFixed(3)}  ${"kg".tr()}",
+                          style: context.titleSmallRed)
+                    ])),
+                Text("${state.pickedOrdersCount} ${"total_order".tr()}")
+              ],
+            ),
+          );
 
           return Container();
         },

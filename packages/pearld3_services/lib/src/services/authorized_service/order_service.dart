@@ -88,7 +88,7 @@ class OrderService {
 
 
 
-  Future<Either<Map<String, dynamic>,Map<String, dynamic>>> getNewOrder(
+  Future<Either<Map<String, dynamic>,Map<String, dynamic>>> getNewOrderForPicker(
       {required Map<String, dynamic> body}) async {
 
     try {
@@ -127,6 +127,48 @@ class OrderService {
       }
     }
   }
+  Future<Either<Map<String, dynamic>,Map<String, dynamic>>> getNewOrderForChecker(
+      {required Map<String, dynamic> body}) async {
+
+    try {
+      final response = await _dio.post(
+        'picking/GetNextOrderByUID',
+        data: body,
+      );
+      if (response.statusCode == 200) {
+
+
+
+        if(response.data!=null){
+
+          return Right(response.data);
+        }
+        else
+        {
+
+          return Left(Status(code: 1, message: 'No new orders').toJson());
+        }
+
+      } else {
+        return Left(Status(code: 1, message: 'Invalid token').toJson());
+      }
+    } on Exception catch (e) {
+      if (e is DioException) {
+        if (e.response != null) {
+          return Left(Status(
+              code: e.response!.statusCode,
+              message: e.response!.statusMessage)
+              .toJson());
+        } else {
+          return Left(
+              Status(code: 0, message: 'Invalid request').toJson());
+        }
+      } else {
+        return Left(Status(code: 0, message: 'Unknown error').toJson());
+      }
+    }
+  }
+
   Future<Either<Map<String, dynamic>,Map<String, dynamic>>> changeItemStatus(
       {required Map<String, dynamic> body}) async {
 

@@ -15,9 +15,19 @@ class LoadOrderEvent extends OrderEvent {
   List<Object> get props => [dateTime];
 }
 
-class LoadNewOrderEvent extends OrderEvent {
+class LoadNewOrderForPickerEvent extends OrderEvent {
   @override
   List<Object> get props => [];
+}
+class LoadNewOrderForCheckerEvent extends OrderEvent {
+  String orderId;
+
+  @override
+  List<Object> get props => [];
+
+  LoadNewOrderForCheckerEvent({
+    required this.orderId,
+  });
 }
 
 class SearchOrderEvent extends OrderEvent {

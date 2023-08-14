@@ -6,20 +6,24 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 // here is the url to POST the jsonFiles through POSTMAN
 // https://indeesapp.azurewebsites.net/api/language/
+// also the json file of eng,ara saved in assets/locale
 
 class LanguageRepository {
   LocalizationService _localizationService = LocalizationService();
 
   Future<List<LanguageModel>> getLanguages() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
+//checking app version changed or not if changed appUpgrade=true
     final appUpgraded = await checkAppVersion();
     if (appUpgraded) {
+      // app updated so get new languages
       final response = await _localizationService.getLanguages();
       final languages = (response as List<dynamic>)
           .map((e) => LanguageModel.fromJson(e))
           .toList();
-
+// and removing old getLanguageByName data from Shared prefs
+// so the language_name will be null  while calling LanguageByName function
+// and gets new words there
       for (LanguageModel languageModel in languages) {
         await prefs.remove('language_${languageModel.language}');
       }
@@ -49,7 +53,8 @@ class LanguageRepository {
 
   Future<Map<String, dynamic>?> getLanguageByName(name) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
+//here cachedLanguage will be null when app Updated
+// pls check function checkAppVersion() , then getLanguages()
     String? cachedLanguage = prefs.getString('language_$name');
     if (cachedLanguage != null) {
       return json.decode(cachedLanguage);

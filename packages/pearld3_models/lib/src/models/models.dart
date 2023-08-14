@@ -13,3 +13,4 @@ export 'language_model.dart';
 export 'order_item_model.dart';
 export 'saved_credential_model.dart';
 export 'image_picker_model.dart';
+export 'blue_device.dart';

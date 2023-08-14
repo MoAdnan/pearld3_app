@@ -29,6 +29,30 @@ class OrderItemModel {
     required this.status,
   });
 
+
+  double get extraNoteInDouble{
+
+      final value = double.tryParse(extraNote!);
+
+    if(value!=null){
+      return value;
+    }
+    else{
+      return 0;
+    }
+
+  }
+
+
+  String get qtyText{
+    if(extraNoteInDouble>0){
+      return '${extraNoteInDouble.toStringAsFixed(3)}(${quantity.toStringAsFixed(3)})';
+    }else
+      {
+        return '${quantity.toStringAsFixed(3)}(${quantity.toStringAsFixed(3)})';
+      }
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'extraNote':extraNote,

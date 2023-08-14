@@ -33,16 +33,32 @@ class OrderViewLoaded extends OrderViewState {
     required this.order,
   });
 // picked items
-  List<OrderItemModel> get pickedItems {
+  List<OrderItemModel> get pickedItemsForPicker {
     return items.where((element) => element.status >= 1).toList();
   }
  // un picked items
-  List<OrderItemModel> get unPickedItems {
+  List<OrderItemModel> get unPickedItemsForPicker {
     return items.where((element) => element.status < 1 ).toList();
   }
   // No stock Items
-  List<OrderItemModel> get noStockItems {
+  List<OrderItemModel> get noStockItemsForPicker {
     return items.where((element) => element.status == 2).toList();
+  }
+
+
+
+  //todo
+
+  List<OrderItemModel> get pickedItemsForChecker {
+    return items.where((element) => element.status >= 3).toList();
+  }
+  // un picked items
+  List<OrderItemModel> get unPickedItemsForChecker {
+    return items.where((element) => element.status < 3 ).toList();
+  }
+  // No stock Items
+  List<OrderItemModel> get noStockItemsForChecker {
+    return items.where((element) => element.status == 4).toList();
   }
 
   @override

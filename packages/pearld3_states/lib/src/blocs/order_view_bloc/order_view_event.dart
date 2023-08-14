@@ -12,12 +12,12 @@ class SaveOrderEvent extends OrderViewEvent {
   List<Object> get props => [];
 }
 
-class PickItemEvent extends OrderViewEvent {
+class UpdateItemEvent extends OrderViewEvent {
   OrderItemModel item;
   int newStatus;
   String extraNote;
   BuildContext context;
-  PickItemEvent({
+  UpdateItemEvent({
     required this.newStatus,
     required this.context,
     required this.item,
