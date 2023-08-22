@@ -1,2 +1,2 @@
 export 'src/services/services.dart';
-export 'src/constants/constatnts.dart';
+export 'src/constants/constants.dart';

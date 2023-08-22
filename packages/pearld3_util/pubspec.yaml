@@ -16,9 +16,8 @@ dependencies:
   permission_handler: ^10.3.0
   dartz: ^0.10.1
   device_info_plus: ^9.0.2
-  indees_esc_pos_utils:
-    path: ../indees_esc_pos_utils
-  print_bluetooth_thermal: ^1.0.9
+  pearld3_blue:
+    path: ../pearld3_blue
   pearld3_models:
     path: ../pearld3_models
 

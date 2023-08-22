@@ -3,6 +3,7 @@ import 'package:pearld3_models/pearld3_models.dart';
 import 'package:pearld3_views/src/views/settings_screen/widget/sub_heading_text.dart';
 import 'icon_widget.dart';
 
+/// A widget that combines a text label and an icon in a row.
 class LanguageDropDownWidget extends StatelessWidget {
   LanguageDropDownWidget(
       {super.key,
@@ -24,7 +25,9 @@ class LanguageDropDownWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        TextWidget(data:textName, color: Colors.black,
+        TextWidget(
+            data: textName,
+            color: Colors.black,
             fontSize: 17,
             fontWeight: FontWeight.w400,
             letterSpace: .1),

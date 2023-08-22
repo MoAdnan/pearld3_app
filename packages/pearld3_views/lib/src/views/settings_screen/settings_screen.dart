@@ -10,6 +10,7 @@ import 'package:pearld3_util/pearld3_util.dart';
 import 'package:pearld3_views/pearld3_views.dart';
 import 'package:pearld3_views/src/views/widget/circular_progress.dart';
 
+/// A screen for displaying and configuring settings.
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({
     super.key,
@@ -20,13 +21,14 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  // ValueNotifier to track the current selected language.
   ValueNotifier<LanguageModel?> currentLanguage =
       ValueNotifier<LanguageModel?>(null);
 
   final TextEditingController paperWidthController = TextEditingController();
 
   final TextEditingController pinForQrController = TextEditingController();
-
+  // Fetches languages from the repository.
   void gettingLanguage() async {
     await getItInstance<LanguageRepository>().getLanguages();
   }
@@ -273,7 +275,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                               selectedValue!;
                                           context.setLocale(currentLanguage
                                               .value!
-                                              .toLacale());
+                                              .toLocale());
                                           Navigator.pop(context);
                                         },
 

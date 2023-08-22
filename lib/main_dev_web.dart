@@ -19,7 +19,10 @@ import 'http_asset_loader/http_asset_loader.dart';
 //   // make sure you call `initializeApp` before using other Firebase services.
 //   await Firebase.initializeApp();
 // }
-
+/// A function that performs manual login using [AuthenticationService].
+///
+/// This function fetches the configuration data from [AuthenticationService]
+/// and stores it in the shared preferences if successful.
 Future<void> manualLogin() async {
   AuthenticationService authenticationService = AuthenticationService();
 
@@ -33,10 +36,12 @@ Future<void> manualLogin() async {
     preferences.setString('config', jsonEncode(response));
   });
 }
-
+/// The main entry point of the application.
 void main() async {
+  // Initialize WidgetsFlutterBinding and localization
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
+  // Configure HydratedBloc storage
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: kIsWeb
         ? HydratedStorage.webStorageDirectory
@@ -44,10 +49,12 @@ void main() async {
   );
 
   // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  // Initialize dependency injection
   unawaited(getIt.init());
   // runApp(App());
+  // Perform manual login
   manualLogin();
-
+  // Start the application with EasyLocalization
   runApp(EasyLocalization(
     supportedLocales: const [Locale('en', 'US'), Locale('ar', 'SA')],
     path: 'assets/lang', // Specify the path to your localization files

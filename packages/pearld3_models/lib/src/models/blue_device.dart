@@ -1,23 +1,26 @@
-class BlueDevice{
-  String name;
-  String address;
+class BlueDevice {
+  final String? name;
+  final String? address;
+  final int type = 0;
+  bool connected = false;
 
-  BlueDevice({
-    required this.name,
-    required this.address,
-  });
+  BlueDevice(this.name, this.address);
 
-  Map<String, dynamic> toMap() {
-    return {
-      'name': this.name,
-      'address': this.address,
-    };
+  BlueDevice.fromMap(Map map)
+      : name = map['name'],
+        address = map['address'];
+
+  Map<String, dynamic> toMap() => {
+    'name': this.name,
+    'address': this.address,
+    'type': this.type,
+    'connected': this.connected,
+  };
+
+  operator ==(Object other) {
+    return other is BlueDevice && other.address == this.address;
   }
 
-  factory BlueDevice.fromMap(Map<String, dynamic> map) {
-    return BlueDevice(
-      name: map['name'] as String,
-      address: map['address'] as String,
-    );
-  }
+  @override
+  int get hashCode => address.hashCode;
 }

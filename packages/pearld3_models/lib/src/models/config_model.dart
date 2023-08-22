@@ -1,15 +1,36 @@
+/// Represents a configuration model containing various settings for an application.
 class ConfigModel {
+  /// The unique identifier for the configuration.
   String? uid;
+
+  /// The email address of the administrator.
   String? adminemail;
+
+  /// The URL of the service associated with the configuration.
   String? serviceurl;
+
+  /// The date when the configuration started.
   String? datestarted;
+
+  /// The name of the company associated with the configuration.
   String? companyname;
+
+  /// The contact information for the configuration.
   String? contact;
+
+  /// The phone number associated with the configuration.
   String? phone;
+
+  /// The activation status of the configuration.
   String? activationstatus;
+
+  /// Indicates whether the configuration is active or not.
   bool? isactive;
+
+  /// The settings specific to the Pearl application.
   PearlAppSettings? pearlSettings;
 
+  /// Creates a new [ConfigModel] instance with the provided settings.
   ConfigModel({
     required this.uid,
     required this.adminemail,
@@ -28,47 +49,77 @@ class ConfigModel {
   //   return 'ConfigModel{uid: $uid, adminemail: $adminemail, serviceurl: $serviceurl, datestarted: $datestarted, companyname: $companyname, contact: $contact, phone: $phone, activationstatus: $activationstatus, isactive: $isactive, pearlSettings: $pearlSettings}';
   // }
 
+  /// Converts the [ConfigModel] instance to a JSON representation.
   Map<String, dynamic> toJson() => {
-    "uid": uid,
-    "adminemail": adminemail,
-    "serviceurl": serviceurl,
-    "datestarted": datestarted,
-    "companyname": companyname,
-    "contact": contact,
-    "phone": phone,
-    "activationstatus": activationstatus,
-    "isactive": isactive,
-    "pearlSettings": pearlSettings!.toJson(),
-  };
+        "uid": uid,
+        "adminemail": adminemail,
+        "serviceurl": serviceurl,
+        "datestarted": datestarted,
+        "companyname": companyname,
+        "contact": contact,
+        "phone": phone,
+        "activationstatus": activationstatus,
+        "isactive": isactive,
+        "pearlSettings": pearlSettings!.toJson(),
+      };
+
+  /// Creates a [ConfigModel] instance from a JSON map.
   factory ConfigModel.fromJson(Map<String, dynamic> json) => ConfigModel(
-    uid: json["uid"],
-    adminemail: json["adminemail"],
-    serviceurl: json["serviceurl"],
-    datestarted: json["datestarted"],
-    companyname: json["companyname"],
-    contact: json["contact"],
-    phone: json["phone"],
-    activationstatus: json["activationstatus"],
-    isactive: json["isactive"],
-    pearlSettings: PearlAppSettings.fromJson(json["pearlSettings"]!),
-  );
+        uid: json["uid"],
+        adminemail: json["adminemail"],
+        serviceurl: json["serviceurl"],
+        datestarted: json["datestarted"],
+        companyname: json["companyname"],
+        contact: json["contact"],
+        phone: json["phone"],
+        activationstatus: json["activationstatus"],
+        isactive: json["isactive"],
+        pearlSettings: PearlAppSettings.fromJson(json["pearlSettings"]!),
+      );
 }
 
+/// Represents settings for the Pearl application.
 class PearlAppSettings {
+  /// The rounding value for quantities.
   int quantityRounding;
   // int currencyRounding;
+  /// Indicates whether editing customer information is allowed.
   bool allowEditCustomer;
+
+  /// Indicates whether editing location information is allowed.
   bool allowEditLocation;
+
+  /// Indicates whether adding opening is allowed.
   bool allowAddOpening;
+
+  /// Indicates whether only product entry is allowed.
   bool productentryonly;
+
+  /// Indicates whether order entry is allowed.
   bool alloworderentry;
+
+  /// Indicates whether invoice entry is allowed.
   bool allowinvoiceentry;
+
+  /// Indicates whether receipt entry is allowed.
   bool allowreceipt;
+
+  /// Indicates whether sales return entry is allowed.
   bool allowsalesreturn;
+
+  /// Indicates whether stock request entry is allowed.
   bool allowstockrequest;
+
+  /// Indicates whether tax calculation is enabled.
   bool taxenabled;
+
+  /// Indicates whether printing is enabled.
   bool printenabled;
+
+  /// Indicates whether always-on-location mode is enabled.
   bool alwayonlocation;
+
+  /// Indicates the status of function 10001.
   bool function10001;
 
   /// for production list view instead dashboard
@@ -76,16 +127,35 @@ class PearlAppSettings {
 
   /// for tile in production entry
   bool function10003;
+
+  /// Indicates whether function 10004 is enabled.
   bool function10004;
+
+  /// Indicates whether function 10005 is enabled.
   bool function10005;
+
+  /// Indicates whether function 10006 is enabled.
   bool function10006;
+
+  /// Indicates whether function 10007 is enabled.
   bool function10007;
+
+  /// Indicates whether function 10008 is enabled.
   bool function10008;
+
+  /// Indicates whether function 10009 is enabled.
   bool function10009;
+
+  /// Indicates whether function 10010 is enabled.
   bool function10010;
+
+  /// Indicates whether function 10011 is enabled.
   bool function10011;
+
+  /// Indicates whether function 10012 is enabled.
   bool function10012;
 
+  /// Creates a new [PearlAppSettings] instance with the provided settings.
   PearlAppSettings({
     required this.quantityRounding,
     //required this.currencyRounding,
@@ -120,38 +190,39 @@ class PearlAppSettings {
     return 'PearlAppSettings{quantityRounding: $quantityRounding, allowEditCustomer: $allowEditCustomer, allowEditLocation: $allowEditLocation, allowAddOpening: $allowAddOpening, productentryonly: $productentryonly, alloworderentry: $alloworderentry, allowinvoiceentry: $allowinvoiceentry, allowreceipt: $allowreceipt, allowsalesreturn: $allowsalesreturn, allowstockrequest: $allowstockrequest, taxenabled: $taxenabled, printenabled: $printenabled, alwayonlocation: $alwayonlocation, function10001: $function10001, function10002: $function10002, function10003: $function10003, function10004: $function10004, function10005: $function10005, function10006: $function10006, function10007: $function10007, function10008: $function10008, function10009: $function10009, function10010: $function10010, function10011: $function10011, function10012: $function10012}';
   }
 
+  /// Converts the [PearlAppSettings] instance to a JSON representation.
   Map<String, dynamic> toJson() => {
-    "quantityRounding": quantityRounding.toString(),
-    //       "currencyRounding": currencyRounding.toString(),
-    "allowEditCustomer": allowEditCustomer,
-    "allowEditLocation": allowEditLocation,
-    "allowAddOpening": allowAddOpening,
-    "productentryonly": productentryonly,
-    "alloworderentry": alloworderentry,
-    "allowinvoiceentry": allowinvoiceentry,
-    "allowreceipt": allowreceipt,
-    "allowsalesreturn": allowsalesreturn,
-    "allowstockrequest": allowstockrequest,
-    "taxenabled": taxenabled,
-    "printenabled": printenabled,
-    "alwayonlocation": alwayonlocation,
-    "function10001": function10001,
-    "function10002": function10002,
-    "function10003": function10003,
-    "function10004": function10004,
-    "function10005": function10005,
-    "function10006": function10006,
-    "function10007": function10007,
-    "function10008": function10008,
-    "function10009": function10009,
-    "function10010": function10010,
-    "function10011": function10011,
-    "function10012": function10012,
-  };
-  factory PearlAppSettings.fromJson(Map<String, dynamic> json)
-  {
+        "quantityRounding": quantityRounding.toString(),
+        //       "currencyRounding": currencyRounding.toString(),
+        "allowEditCustomer": allowEditCustomer,
+        "allowEditLocation": allowEditLocation,
+        "allowAddOpening": allowAddOpening,
+        "productentryonly": productentryonly,
+        "alloworderentry": alloworderentry,
+        "allowinvoiceentry": allowinvoiceentry,
+        "allowreceipt": allowreceipt,
+        "allowsalesreturn": allowsalesreturn,
+        "allowstockrequest": allowstockrequest,
+        "taxenabled": taxenabled,
+        "printenabled": printenabled,
+        "alwayonlocation": alwayonlocation,
+        "function10001": function10001,
+        "function10002": function10002,
+        "function10003": function10003,
+        "function10004": function10004,
+        "function10005": function10005,
+        "function10006": function10006,
+        "function10007": function10007,
+        "function10008": function10008,
+        "function10009": function10009,
+        "function10010": function10010,
+        "function10011": function10011,
+        "function10012": function10012,
+      };
 
-    return  PearlAppSettings(
+  /// Creates a [PearlAppSettings] instance from a JSON map.
+  factory PearlAppSettings.fromJson(Map<String, dynamic> json) {
+    return PearlAppSettings(
       quantityRounding: int.parse(json["quantityRounding"].toString()),
       //     currencyRounding: json["currencyRounding"],
       allowEditCustomer: json["allowEditCustomer"],

@@ -8,6 +8,7 @@ import 'package:pearld3_views/src/views/configure_screen/widgets/email_field.dar
 import '../../../pearld3_views.dart';
 import 'model/email.dart';
 
+/// A form for configuring the application.
 class ConfigForm extends StatelessWidget {
   ConfigForm({super.key});
 
@@ -16,9 +17,11 @@ class ConfigForm extends StatelessWidget {
   void _configure(BuildContext context) async {
     final emailDirty = Email.dirty(_emailController.text);
     if (emailDirty.isValid) {
-      context.read<ConfigBloc>().add(GetConfigEvent(email: _emailController.text));
+      context
+          .read<ConfigBloc>()
+          .add(GetConfigEvent(email: _emailController.text));
     } else {
-      final error  = Status(message: emailDirty.error!.errorMessage, code: 0);
+      final error = Status(message: emailDirty.error!.errorMessage, code: 0);
       context.read<ConfigBloc>().add(ThrowErrorEvent(error: error));
     }
   }
@@ -32,7 +35,7 @@ class ConfigForm extends StatelessWidget {
         const AppLogoWidget(),
         kHeight28,
         kHeight12,
-
+        // Email input field
         EmailField(controller: _emailController),
         //ERROR TEXT
         BlocBuilder<ConfigBloc, ConfigState>(
@@ -46,12 +49,12 @@ class ConfigForm extends StatelessWidget {
         ),
         kHeight28,
 
-        // LOGIN BUTTON
+        // Configure button
         BlocConsumer<ConfigBloc, ConfigState>(
           listener: (context, state) {
             print(state);
 
-            if ( state is ConfigLoaded) {
+            if (state is ConfigLoaded) {
               context.go(Routes.LOGIN);
             }
           },

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:pearld3_views/src/views/activativate_screen/activate_form.dart';
 
+/// The screen that displays the activation key form.
 class ActivateKeyScreen extends StatefulWidget {
   //Function onTap;
 
-  ActivateKeyScreen({super.key});
+  const ActivateKeyScreen({super.key});
 
   @override
   // ignore: library_private_types_in_public_api

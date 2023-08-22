@@ -7,17 +7,25 @@ import 'package:pearld3_states/pearld3_states.dart';
 import 'package:pearld3_util/utilites/context_extensions.dart';
 import '../../../pearld3_views.dart';
 
+/// A form for user login.
 class LoginForm extends StatelessWidget {
   LoginForm({super.key});
+
+  /// A [ValueNotifier] to track whether the "Remember Me" checkbox is selected.
   ValueNotifier<bool> isRemember = ValueNotifier<bool>(false);
+
+  /// Controllers for the username and password text fields.
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  /// Focus nodes for the username and password text fields.
   FocusNode usernameNode = FocusNode();
   FocusNode passwordNode = FocusNode();
   final loginBloc = getItInstance<LoginBloc>();
 
   final _formKey = GlobalKey<FormState>();
 
+  /// Handles the login process.
   void login(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       loginBloc.add(Login(
@@ -30,6 +38,7 @@ class LoginForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Loading saved credentials if available.
     final savedData =
         context.read<SettingsBloc>().state.appSettingsModel.savedCredential;
 
@@ -115,13 +124,17 @@ class LoginForm extends StatelessWidget {
                   children: [
                     Flexible(
                       child: LoadingButton(
-                        height:50,
+                        height: 50,
                         buttonText: 'login'.tr(),
                         onTap: () => login(context),
                         isLoading: state is LoginLoading,
                       ),
                     ),
-                    IconButtonWidget(onTap: () {}, icon: Icons.qr_code,size: 60,)
+                    IconButtonWidget(
+                      onTap: () {},
+                      icon: Icons.qr_code,
+                      size: 60,
+                    )
                   ],
                 );
               },

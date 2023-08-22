@@ -7,6 +7,10 @@ import 'package:pearld3_states/di.dart';
 import 'package:pearld3_states/pearld3_states.dart';
 import 'package:pearld3_util/pearld3_util.dart';
 
+/// The main entry point for the application.
+///
+/// This widget represents the root of the application and is responsible for
+/// setting up various providers and initializing the routing mechanism.
 class App extends StatefulWidget {
   const App({super.key});
 
@@ -15,30 +19,35 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  late AuthenticationRepository _authenticationRepostory;
+  late AuthenticationRepository _authenticationRepository;
 
   @override
   void initState() {
-    _authenticationRepostory = getItInstance<AuthenticationRepository>();
+    _authenticationRepository = getItInstance<AuthenticationRepository>();
 
     super.initState();
   }
 
   @override
   void dispose() {
-    _authenticationRepostory.dispose();
+    _authenticationRepository.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return RepositoryProvider.value(
-      value: _authenticationRepostory,
+      value: _authenticationRepository,
       child: const AppView(),
     );
   }
 }
 
+/// The main UI structure of the application.
+///
+/// This widget sets up multiple [BlocProvider] instances for managing the
+/// application's state, along with configuring the [MaterialApp.router] to
+/// handle routing using the provided [AppRoutes.routes] configuration.
 class AppView extends StatelessWidget {
   const AppView({super.key});
 
@@ -53,7 +62,6 @@ class AppView extends StatelessWidget {
         // value: getItInstance<ConfigCubit>(),
         //  ),
         BlocProvider<ConfigBloc>(
-
           create: (context) => getItInstance<ConfigBloc>(),
         ),
         BlocProvider<LoginBloc>(

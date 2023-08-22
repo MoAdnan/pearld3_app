@@ -1,7 +1,7 @@
 
 
-class ApiContants {
-  ApiContants();
+class ApiConstantsT {
+  ApiConstantsT();
   static const base_url = 'https://indeesapp.azurewebsites.net/api/pearl';
  static const languageBaseUrl = "https://indeesapp.azurewebsites.net/api/language";
   static const base_test_url = 'http://192.168.0.100:8000/api';

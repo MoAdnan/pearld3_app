@@ -7,10 +7,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 // here is the url to POST the jsonFiles through POSTMAN
 // https://indeesapp.azurewebsites.net/api/language/
 // also the json file of eng,ara saved in assets/locale
+/// A repository class responsible for handling language-related operations.
 
 class LanguageRepository {
   LocalizationService _localizationService = LocalizationService();
 
+  /// Retrieves the list of available languages.
+  ///
+  /// Fetches the list of available languages from the [_localizationService].
+  /// If the app has been upgraded, it fetches new languages and updates the cache.
+  /// Returns a list of [LanguageModel].
   Future<List<LanguageModel>> getLanguages() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 //checking app version changed or not if changed appUpgrade=true
@@ -51,6 +57,11 @@ class LanguageRepository {
     }
   }
 
+  /// Retrieves language data by its name.
+  ///
+  /// Fetches language data by its [name] from the [_localizationService].
+  /// If the data is cached, it returns the cached data. If not, it fetches the
+  /// data and updates the cache before returning it.
   Future<Map<String, dynamic>?> getLanguageByName(name) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 //here cachedLanguage will be null when app Updated
@@ -64,6 +75,11 @@ class LanguageRepository {
       return language;
     }
   }
+
+  /// Checks if the app has been upgraded.
+  ///
+  /// Compares the app's version with the stored version in SharedPreferences.
+  /// If they differ, updates the stored version and returns true. Otherwise, returns false.
 
   Future<bool> checkAppVersion() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

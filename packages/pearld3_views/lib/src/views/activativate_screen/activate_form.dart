@@ -9,8 +9,11 @@ import 'package:pearld3_services/pearld3_services.dart';
 import 'package:pearld3_util/pearld3_util.dart';
 import 'package:pearld3_views/pearld3_views.dart';
 
-import '../settings_screen/widget/sub_heading_text.dart';
-
+/// A form widget for device activation.
+///
+/// This widget provides a form for activating a device with a username, password,
+/// and activation key. It communicates with the [AuthenticationRepository] to
+/// register the device and navigate to the login screen upon successful registration.
 class ActivateForm extends StatelessWidget {
   ActivateForm({super.key});
   FocusNode usernameNode = FocusNode();
@@ -22,24 +25,26 @@ class ActivateForm extends StatelessWidget {
   ValueNotifier<bool> isLoading = ValueNotifier<bool>(false);
   ValueNotifier<String> error = ValueNotifier<String>('');
 
+  /// Registers the device using the provided credentials.
   void _registerDevice(BuildContext context) async {
-    context.pop();
+
     isLoading.value = true;
+    // Register the device using the [AuthenticationRepository]
     getItInstance<AuthenticationRepository>()
         .registerDevice(
             username: usernameController.text,
             password: passwordController.text,
             activationKey: activationKeyController.text,
-    config: context.read<ConfigBloc>().state.config!
-    )
+            config: context.read<ConfigBloc>().state.config!)
         .then((value) {
       if (value == ApiStatus.deviceRegistered) {
         context.go(Routes.LOGIN);
         error.value = '';
         isLoading.value = false;
+        context.pop();
       } else {
         error.value = value;
-        isLoading.value = false;
+        isLoading.value = true;
       }
     });
   }
@@ -51,9 +56,13 @@ class ActivateForm extends StatelessWidget {
       children: [
         const AppLogoWidget(),
         kHeight28,
-        TextWidget(data:'activate_your_device_with_key'.tr(),color: context.colorBlack , fontSize: 20,
+        TextWidget(
+          data: 'activate_your_device_with_key'.tr(),
+          color: context.colorBlack,
+          fontSize: 20,
           fontWeight: FontWeight.normal,
-          letterSpace: .7,),
+          letterSpace: .7,
+        ),
         kHeight12,
         UsernameField(
           width: 270,

@@ -1,14 +1,29 @@
 import 'package:equatable/equatable.dart';
 
+/// Represents input data for the database.
 class DbInputs extends Equatable {
+  /// The requested date for the data.
   String? reqdate;
+
+  /// The unique identifier for the outlet.
   String? outletUID;
+
+  /// The device ID associated with the data.
   int? deviceID;
+
+  /// The reference identifier.
   String? refUID;
+
+  /// The key for the report.
   String? reportKey;
+
+  /// Indicates whether PDF mode is enabled.
   bool? pdfMode;
+
+  /// The width of the paper.
   int? paperWidth;
 
+  /// Creates a new [DbInputs] instance.
   DbInputs({
     this.reqdate,
     this.outletUID,
@@ -23,6 +38,7 @@ class DbInputs extends Equatable {
   List<Object?> get props =>
       [reqdate, outletUID, deviceID, refUID, reportKey, pdfMode, paperWidth];
 
+  /// Converts the [DbInputs] instance to a map.
   Map<String, dynamic> toMap() {
     return {
       'reqdate': reqdate,
@@ -35,6 +51,7 @@ class DbInputs extends Equatable {
     };
   }
 
+  /// Creates a [DbInputs] instance from a map.
   factory DbInputs.fromMap(Map<String, dynamic> map) {
     return DbInputs(
       reqdate: map['reqdate'],
@@ -47,6 +64,7 @@ class DbInputs extends Equatable {
     );
   }
 
+  /// Creates a copy of [DbInputs] with optional changes.
   DbInputs copyWith({
     String? reqdate,
     String? outletUID,

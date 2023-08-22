@@ -15,14 +15,18 @@ import 'package:pearld3_views/src/views/order_item_view_screen/widget/doc_number
 import 'package:pearld3_views/src/views/order_item_view_screen/widget/header_text_container.dart';
 import 'package:pearld3_views/src/views/widget/circular_progress.dart';
 
+/// Screen that displays details of an order item.
 class OrderItemViewScreen extends StatelessWidget {
   OrderItemViewScreen({
     super.key,
   });
-
+  // Value notifier to track if the checkbox is checked.
   ValueNotifier<bool> isChecked = ValueNotifier<bool>(false);
+  // Holds the scanned barcode.
   late String scannedBarcode;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  /// Saves the order if the checkbox is checked.
   void _saveOrder(BuildContext context) {
     if (isChecked.value) {
       context.showAlert(
@@ -43,7 +47,7 @@ class OrderItemViewScreen extends StatelessWidget {
       context.showWarningSnackBar('picked_alert'.tr());
     }
   }
-
+  /// Shows the details of an order item.
   _onShowItem(BuildContext context, OrderItemModel item) async {
     final loginState = context.read<LoginBloc>().state;
     if (loginState is LoggedIn) {
@@ -56,7 +60,7 @@ class OrderItemViewScreen extends StatelessWidget {
       );
     }
   }
-
+  /// Scans a barcode and displays the scanned item details.
   Future<void> scanBarcode(BuildContext context) async {
     String barcodeScanRes;
 
@@ -86,7 +90,7 @@ class OrderItemViewScreen extends StatelessWidget {
       // You may choose to show a different message or take appropriate action here
     }
   }
-
+  /// Shows a leave alert based on order and login status.
   void _leaveAlert(BuildContext context) {
     final loginState = context.read<LoginBloc>().state;
 
@@ -284,6 +288,10 @@ class OrderItemViewScreen extends StatelessWidget {
                     }
                   },
                 ),
+
+                IconButton(onPressed: () {
+                  context.read<SettingsBloc>().add(PrintEvent(context: context));
+                }, icon: Icon(Icons.print,color: Colors.black,)),
                 ValueListenableBuilder(
                   valueListenable: isChecked,
                   builder: (context, value, child) {

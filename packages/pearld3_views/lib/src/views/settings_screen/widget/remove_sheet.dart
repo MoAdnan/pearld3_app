@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pearld3_util/pearld3_util.dart';
 import '../../../../pearld3_views.dart';
 
+/// A bottom sheet widget for confirming removal.
 class RemoveMeBottomSheet extends StatelessWidget {
   const RemoveMeBottomSheet({super.key});
 
@@ -27,7 +28,8 @@ class RemoveMeBottomSheet extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     "${"remove_warning_text".tr()} :",
-                 style: context.bodyExtraSmall!.copyWith(fontSize: 15), ),
+                    style: context.bodyExtraSmall!.copyWith(fontSize: 15),
+                  ),
                 ),
                 kHeight28,
                 Text(

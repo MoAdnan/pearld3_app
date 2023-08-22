@@ -4,6 +4,7 @@ import 'package:pearld3_states/pearld3_states.dart';
 import 'package:pearld3_views/src/views/widget/circular_progress.dart';
 import 'order_tile.dart';
 
+/// A widget that displays a list of orders.
 class OrderListWidget extends StatelessWidget {
   const OrderListWidget({super.key});
 

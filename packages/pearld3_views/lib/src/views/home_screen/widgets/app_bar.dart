@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
+/// A custom AppBar widget with customizable leading, search bar, and actions.
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget? leading;
   Widget? searchBar;

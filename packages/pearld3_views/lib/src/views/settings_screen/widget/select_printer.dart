@@ -6,6 +6,7 @@ import 'package:pearld3_util/pearld3_util.dart';
 import 'package:pearld3_views/src/constants/app_spaces.dart';
 import 'icon_widget.dart';
 
+/// A widget that displays the selected printer information and actions related to it.
 class SelectPrinter extends StatelessWidget {
   const SelectPrinter({super.key});
 
@@ -22,7 +23,7 @@ class SelectPrinter extends StatelessWidget {
               children: [
                 Text(
                   state.appSettingsModel.blueDevice != null
-                      ? state.appSettingsModel.blueDevice!.name
+                      ? state.appSettingsModel.blueDevice!.name!
                       : 'not_selected'.tr(),
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
@@ -34,7 +35,7 @@ class SelectPrinter extends StatelessWidget {
                 ),
                 Text(
                   state.appSettingsModel.blueDevice != null
-                      ? state.appSettingsModel.blueDevice!.address
+                      ? state.appSettingsModel.blueDevice!.address!
                       : '00',
                   style: TextStyle(
                     color: context.colorGrey,
@@ -55,14 +56,18 @@ class SelectPrinter extends StatelessWidget {
                 IconWidget(
                   icon: Icons.print,
                   onTap: () {
-                    context.read<SettingsBloc>().add(TestPrintTicketEvent(context: context));
+                    context
+                        .read<SettingsBloc>()
+                        .add(TestPrintEvent(context: context));
                   },
                 ),
                 kWidth16,
                 IconWidget(
                   icon: Icons.list,
                   onTap: () {
-                    context.read<SettingsBloc>().add(ChangePrinterEvent(context: context));
+                    context
+                        .read<SettingsBloc>()
+                        .add(ChangePrinterEvent(context: context));
                   },
                 ),
               ],
@@ -73,10 +78,6 @@ class SelectPrinter extends StatelessWidget {
     );
   }
 }
-
-
-
-
 
 class Item {
   String heading;

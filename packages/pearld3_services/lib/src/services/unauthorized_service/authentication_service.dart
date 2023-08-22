@@ -3,11 +3,12 @@ import 'package:dio/dio.dart';
 import '../../constants/api_const.dart';
 import '../../models/app_error_model.dart';
 
+/// This class provides methods for handling authentication-related API calls.
 class AuthenticationService{
 
 
   Dio _dio = Dio(BaseOptions(
-    headers: ApiContants.testHeader,
+    headers: ApiConstants.testHeader,
     followRedirects: false,
     validateStatus: (status) {
       return status! < 500;
@@ -19,12 +20,12 @@ class AuthenticationService{
   ));
 
 
-
+  /// Retrieves configuration settings based on the provided [email].
   Future<Either<Map<String, dynamic>, Map<String, dynamic>>> getConfiguration(
       {required String email}) async {
     try {
       _dio.options.baseUrl = '';
-      final response = await _dio.get('${ApiContants.base_url}/$email');
+      final response = await _dio.get('${ApiConstants.base_url}/$email');
       if (response.statusCode == 200) {
         return Right(response.data['settings']);
       } else {
@@ -48,7 +49,7 @@ class AuthenticationService{
       }
     }
   }
-
+  /// Performs a login using the provided [credential] and [serviceUrl].
   Future<Either<Map<String, dynamic>, Map<String, dynamic>>> login(
       {required Map<String, dynamic> credential,
         required String serviceUrl}) async {
@@ -80,7 +81,7 @@ class AuthenticationService{
       }
     }
   }
-
+  /// Registers a device using the provided [credential] and [serviceUrl].
   Future<String> registerDevice(
       {required Map<String, dynamic> credential,
         required String serviceUrl}) async {

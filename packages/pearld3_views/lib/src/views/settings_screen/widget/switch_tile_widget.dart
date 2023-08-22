@@ -3,6 +3,7 @@ import 'package:pearld3_util/pearld3_util.dart';
 import 'package:pearld3_views/src/views/settings_screen/widget/sub_heading_text.dart';
 import '../../widget/switch_widget.dart';
 
+/// A widget that displays a switch tile with a label.
 class SwitchTileWidget extends StatelessWidget {
   SwitchTileWidget(
       {super.key,
@@ -17,7 +18,9 @@ class SwitchTileWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        TextWidget(data:textName, color: Colors.black,
+        TextWidget(
+            data: textName,
+            color: Colors.black,
             fontSize: 17,
             fontWeight: FontWeight.w400,
             letterSpace: .1),

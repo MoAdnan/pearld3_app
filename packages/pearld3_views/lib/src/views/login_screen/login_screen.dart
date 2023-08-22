@@ -4,14 +4,13 @@ import 'package:go_router/go_router.dart';
 import 'package:pearld3_util/pearld3_util.dart';
 import 'package:pearld3_views/src/views/login_screen/login_form.dart';
 
-
-
-
+/// Represents the login screen of the application.
 class LoginScreen extends StatelessWidget {
-
   const LoginScreen({
     Key? key,
   }) : super(key: key);
+
+  /// Handles the confirmation dialog when the user attempts to exit the app.
   Future<bool> onPop(BuildContext context) async {
     context.showAlert(
       cancelText: 'no'.tr(),
@@ -19,14 +18,15 @@ class LoginScreen extends StatelessWidget {
       title: 'exit_app'.tr(),
       onCancel: () => context.pop(),
       onConfirm: () {
-       context.exitApp();
+        context.exitApp();
       },
-
-      buttonTextStyle: context.buttonTextStyle.copyWith(color: context.primaryColor ),
-      titleStyle:    context.titleMedium!.copyWith(fontWeight: FontWeight.bold),
+      buttonTextStyle:
+          context.buttonTextStyle.copyWith(color: context.primaryColor),
+      titleStyle: context.titleMedium!.copyWith(fontWeight: FontWeight.bold),
     );
-    return false;
+    return false; // Prevents the user from exiting immediately.
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +37,7 @@ class LoginScreen extends StatelessWidget {
       // },),
       backgroundColor: Colors.white,
       body: WillPopScope(
-        onWillPop:()=> onPop(context),
+        onWillPop: () => onPop(context), // Handles the back button press
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
@@ -46,7 +46,7 @@ class LoginScreen extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 20, right: 20),
                 child: Column(
                   children: [
-                    LoginForm(),
+                    LoginForm(), // Displays the login form.
                   ],
                 ),
               ),

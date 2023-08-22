@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pearld3_util/pearld3_util.dart';
 import '../../../../pearld3_views.dart';
 
+/// A widget that combines a dropdown list, a switch, and a text label in a row.
 class DropDownWithSwitch extends StatelessWidget {
   DropDownWithSwitch({
     super.key,
@@ -28,7 +29,7 @@ class DropDownWithSwitch extends StatelessWidget {
       children: [
         Text(
           textName,
-          style:  TextStyle(
+          style: TextStyle(
               color: context.colorBlack,
               fontSize: 17,
               fontWeight: FontWeight.w400,

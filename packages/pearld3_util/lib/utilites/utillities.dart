@@ -6,14 +6,16 @@ import 'package:geolocator/geolocator.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import '../model/app_error_model.dart';
 
+/// A utility class containing various methods for common tasks.
 class Utilities {
   Utilities();
-  DeviceInfoPlugin _deviceInfo = DeviceInfoPlugin();
+  final DeviceInfoPlugin _deviceInfo = DeviceInfoPlugin();
   late String appName;
   late String packageName;
   late String version;
   late String buildNumber;
 
+  /// Retrieves information about the installed app.
   Future<Map<String, String>> getAppInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
@@ -31,6 +33,7 @@ class Utilities {
     return appInfoMap;
   }
 
+  /// Retrieves the current device's location.
   Future<Either<ApiErrorModel, Position>> getCurrentLocation() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -72,14 +75,14 @@ class Utilities {
     final postion = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
 
-
     return Right(postion);
   }
 
+  /// Retrieves the device's unique identifier.
   Future<String?> getDeviceId() async {
     String? deviceId;
     if (kIsWeb) {
-      deviceId = "QP1A.190711.020";
+      deviceId = "QKQ1.191014.001";
       return deviceId;
     }
     if (Platform.isAndroid) {
@@ -87,11 +90,11 @@ class Utilities {
 
       deviceId = androidInfo.id;
       //rayees
-     // deviceId = "SE1A.211212.001.B1";
+      // deviceId = "SE1A.211212.001.B1";
       //checker
-      // deviceId = "QKQ1.191014.001";
+      deviceId = "QKQ1.191014.0012";
       //picker
-      deviceId = "QP1A.190711.020";
+      // deviceId = "QP1A.190711.020";
     } else if (Platform.isIOS) {
       IosDeviceInfo iosInfo = await _deviceInfo.iosInfo;
       deviceId = iosInfo.identifierForVendor;
@@ -100,6 +103,7 @@ class Utilities {
     return deviceId;
   }
 
+  /// Retrieves the device's model name.
   Future<String?> getDeviceModel() async {
     String? deviceModel;
     if (kIsWeb) {

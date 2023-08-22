@@ -3,6 +3,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import '../models/app_error_model.dart';
 
+/// This class provides methods for making authorized API calls with headers.
 
 class AuthorizedService {
   String baseUrl;
@@ -21,7 +22,10 @@ class AuthorizedService {
         }
     ));
   }
-  
+  /// Retrieves orders based on specified parameters.
+  ///
+  /// Returns either a list of dynamic containing order data or an error map.
+
   Future<Either<Map<String,dynamic>,List<dynamic>>> getOrders({required String regDate,required String outletID,required String deviceID,required String reportKey})async{
     final body = {
       "reqdate": regDate,

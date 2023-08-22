@@ -1,80 +1,229 @@
+/// Represents the settings for a device.
 class DeviceSettingModel {
+  /// Unique identifier for the device.
   String? deviceUID;
+
+  /// Local connection string.
   String? localConnectionString;
+
+  /// Remote connection string.
   String? remotConnectionString;
+
+  /// The type of synchronization.
   int? syncType;
+
+  /// The synchronization code.
   String? syncCode;
+
+  /// The synchronization template.
   String? syncTemplate;
+
+  /// The scope of synchronization.
   String? syncScope;
+
+  /// The maximum discount allowed.
   double? maxDiscount;
+
+  /// The minimum shelf life (in days) required for sales.
   int? minimumShelfLifeForSales;
+
+  /// The minimum shelf life (in days) required for returns.
   int? minimumShelfLifeForReturn;
+
+  /// The minimum shelf life (in days) required for inventory management.
   int? minimumShelfLifeInventoryManagement;
+
+  /// The maximum number of days for expiry at the stock report.
   int? maxExpiryDaysAtStockReport;
+
+  /// Indicates whether transactions with previous dates are allowed.
   bool? allowPrevDateTransactions;
+
+  /// Indicates whether return balances are moved to invoices.
   bool? moveReturnBalanceToInvoices;
+
+  /// Indicates whether editing new customer details is allowed during sales.
   bool? allowEditNewCustomersOnSales;
+
+  /// The maximum number of days a new customer's data persists.
   int? maximumDaysNewCustomerPersist;
+
+  /// Indicates whether the device is a client.
   bool? isAClient;
+
+  /// Indicates whether transactions can only be performed with active accounts.
   bool? transactionOnlyWithActiveAccounts;
+
+  /// Indicates whether to load the dashboard on startup.
   bool? loadDashBoardOnStartup;
+
+  /// Indicates whether to load data from the database.
   bool? loadFromDB;
+
+  /// The default number of days for finding records.
   int? defaultFindDays;
+
+  /// The ratio of master items to child items.
   int? masterChildItemRatio;
+
+  /// Indicates whether to check for customer changes during sales analysis.
   bool? chkWithCustomerChangeForSalesAnalysis;
   int? ccsExpiryDays;
+
+  /// The number of days before customer credit sales expire.
   bool? popOutletAtPendingInvoice;
+
+  /// Indicates whether to show the outlet popup at pending invoices.
   bool? popOutletAtStockReport;
+
+  /// Indicates whether to show the outlet popup at the stock report.
   bool? popCustomerAtAccStatement;
+
+  /// Indicates whether to show the customer popup at the account statement.
   bool? bomChildQtyEditAtProduction;
+
+  /// Indicates whether to allow editing child quantities in BOM production.
   bool? setBOMMasterQuantityAsDefault;
+
+  /// Indicates whether to set the BOM master quantity as default.
   bool? allowEditBOMMasterQuantity;
+
+  /// Indicates whether to allow editing BOM master quantities.
   bool? imageTileBasedItemPicker;
+
+  /// Indicates whether the item picker uses image tiles.
   bool? viewConfidentialReports;
+
+  /// Indicates whether to view confidential reports.
   int? maxUnLoadRqst;
+
+  /// The maximum number of unload requests allowed.
   int? maxLoadRqst;
+
+  /// The maximum number of load requests allowed.
   bool? blockExpiredOrderFromReceive;
+
+  /// Indicates whether to block expired orders from being received.
   bool? asterikOnCostDetails;
+
+  /// Indicates whether to display asterisks on cost details.
   bool? editCostAndPriceInline;
+
+  /// Indicates whether to edit costs and prices inline.
   bool? showWideScreenInLoadConfirm;
+
+  /// Indicates whether to show a wide screen in load confirmation.
   bool? printCompanyHeader;
+
+  /// Indicates whether to print group total on documents.
   bool? printGroupTotal;
+
+  /// The delay time (in seconds) before printing starts.
   double? printStartAfter;
+
+  /// The maximum number of original prints allowed.
   int? maximumNumberOfOriginalPrint;
+
+  /// The maximum number of duplicate prints allowed.
   int? maximumNumberOfDuplicatePrint;
+
+  /// Indicates whether to search for items using their codes by default.
   bool? defaultItmSearchByCode;
+
+  /// Indicates whether to hide shelf life information from ERP.
   bool? hideShelfLifeFromERP;
+
+  /// Indicates whether to allow advance purchase orders.
   bool? advancePurchaseOrder;
+
+  /// The maximum quantity allowed for a single item.
   int? maxQtyAllowed;
+
+  /// The maximum cost allowed for a single item.
   int? maxCostAllowed;
+
+  /// Indicates whether purchase returns are only towards purchase invoices.
   bool? isPReturnOnlyTowardsPurchaseInvoice;
+
+  /// Indicates whether the purchase module is new.
   bool? isNewPurchaseModule;
+
+  /// Indicates whether item entry is in fixed mode.
   bool? isItemEntryFixedMode;
+
+  /// Indicates whether to show only the warehouse in the branch.
   bool? showOnlyWareHouseInBranch;
+
+  /// Indicates whether to allow returns without references.
   bool? allowNoReferanceReturn;
+
+  /// Indicates whether to show the last sold price during returns.
   bool? showLastSoldPriceInReturn;
+
+  /// Indicates whether returns are automatically accepted.
   bool? autoAcceptReturn;
+
+  /// The maximum quantity allowed for adjusting received items.
   int? maxPReceiveAdjustQty;
+
+  /// The maximum percentage allowed for inventory adjustment.
   double? maxInventoryAdjustPercent;
+
+  /// Indicates whether users are allowed to input carton information.
   bool? allowUserToInputCtn;
+
+  /// Indicates whether promotion entries are automated.
   bool? promotionAutoEntry;
+
+  /// Indicates whether to show completed bill references in the journal.
   bool? chkShowCompletedBillRefJournal;
+
+  /// Indicates whether to use continuous entry mode.
   bool? chkContinuesEntryMode;
+
+  /// Indicates whether to ask for printing while saving a receipt.
   bool? chkAskToPrintWhileSaveReceipt;
+
+  /// The maximum number of days for applying discounts.
   int? maxDiscountDays;
+
+  /// The maximum percentage allowed for discounts.
   int? maxDiscountPercentage;
+
+  /// The order at which to invoice the order.
   int? invoiceTheOrderAt;
+
+  /// Indicates whether to allow editing narration after bill is saved.
   bool? chkEditNarrationAfterBIllSaved;
+
+  /// Indicates whether the default stock report is grouped by expiry.
   bool? defualtStkReportInExpiryGrouped;
+
+  /// Indicates whether to show the cost in the stock report.
   bool? showCostAtStockReport;
+
+  /// Indicates whether receipt amount flows automatically.
   bool? autoFlowReceiptAmount;
+
+  /// Indicates whether to include images during opening entry.
   bool? includeImageDuringOpeningEntry;
+
+  /// The default search module.
   int? defaultSearchModule;
+
+  /// Indicates whether user-based orders are enabled.
   bool? userBasedOrders;
 
+  /// The starting status for product check.
   int? productCheckStartingStatus;
+
+  /// The ending status for product check.
   int? productCheckEndingStatus;
+
+  /// The list of product check status.
   String? productCheckStatusList;
+
+  /// Constructs a [DeviceSettingModel].
   DeviceSettingModel(
       {this.userBasedOrders,
       this.deviceUID,
@@ -156,6 +305,7 @@ class DeviceSettingModel {
     return productCheckStatusList!.split(",").map(int.parse).toList();
   }
 
+  /// Constructs a [DeviceSettingModel] from a JSON map.
   DeviceSettingModel.fromJson(Map<String, dynamic> json) {
     productCheckStartingStatus = json['productCheckStartingStatus'];
     userBasedOrders = json['userBasedOrders'];
@@ -239,6 +389,7 @@ class DeviceSettingModel {
     defaultSearchModule = json['defaultSearchModule'];
   }
 
+  /// Converts this [DeviceSettingModel] instance to a JSON map.
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
 

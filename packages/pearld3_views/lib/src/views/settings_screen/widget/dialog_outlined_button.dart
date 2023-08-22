@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pearld3_util/pearld3_util.dart';
 
+/// A custom button widget that displays an outlined button with a specific text.
 class OutlinedDialogBtn extends StatelessWidget {
   final Function() onCancel;
   final Function() onConfirm;

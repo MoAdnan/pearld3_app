@@ -2,9 +2,10 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import '../../constants/api_const.dart';
 
+/// This class provides methods for retrieving language-related data from APIs.
 class LocalizationService {
   Dio _dio = Dio(BaseOptions(
-    headers: ApiContants.testHeader,
+    headers: ApiConstants.testHeader,
     followRedirects: false,
     validateStatus: (status) {
       return status! < 500;
@@ -15,9 +16,13 @@ class LocalizationService {
     receiveTimeout: Duration(seconds: 30),
   ));
 
+  /// Retrieves language data by name from the API based on the provided [language].
+  ///
+  /// Returns a map containing language data, or `null` if an error occurs.
+
   Future<Map<String, dynamic>?> getLanguagesByName(String language) async {
     try {
-      _dio.options.baseUrl = ApiContants.languageBaseUrl;
+      _dio.options.baseUrl = ApiConstants.languageBaseUrl;
       final response = await _dio.get('/LanguagesByName/$language');
       if (response.statusCode == 200) {
         // print(response.data.runtimeType);
@@ -31,9 +36,13 @@ class LocalizationService {
     }
   }
 
+  /// Retrieves a list of available languages from the API.
+  ///
+  /// Returns a list of dynamic containing language data, or an empty list if an error occurs.
+
   Future<List<dynamic>?> getLanguages() async {
     try {
-      _dio.options.baseUrl = ApiContants.languageBaseUrl;
+      _dio.options.baseUrl = ApiConstants.languageBaseUrl;
 
       final response = await _dio.get('/getlanguages');
 

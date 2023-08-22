@@ -4,6 +4,7 @@ import 'package:pearld3_views/src/views/settings_screen/widget/sub_heading_text.
 import '../../widget/drop_down_widget.dart';
 import 'icon_widget.dart';
 
+/// A custom widget that displays a dropdown with an associated label and icon.
 class CustomDropDownWidget extends StatelessWidget {
   CustomDropDownWidget(
       {super.key,
@@ -11,21 +12,21 @@ class CustomDropDownWidget extends StatelessWidget {
       required this.textName,
       required this.icon,
       required this.onChange,
-      required this.initialValue
-      });
+      required this.initialValue});
   String? initialValue;
   final Function(String?) onChange;
   final List<String?> dropDownList;
   final String textName;
   final IconData icon;
 
-
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        TextWidget(data:textName, color: Colors.black,
+        TextWidget(
+            data: textName,
+            color: Colors.black,
             fontSize: 17,
             fontWeight: FontWeight.w400,
             letterSpace: .1),

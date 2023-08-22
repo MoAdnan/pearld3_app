@@ -4,6 +4,7 @@ import 'package:pearld3_models/pearld3_models.dart';
 import 'package:pearld3_states/blocs.dart';
 import 'package:pearld3_util/pearld3_util.dart';
 
+/// A widget that displays a single order tile.
 class OrderTile extends StatelessWidget {
   OrderModel order;
   VoidCallback? onTap;

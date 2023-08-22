@@ -4,6 +4,7 @@ import 'package:pearld3_util/pearld3_util.dart';
 import 'package:pearld3_views/src/views/settings_screen/widget/sub_heading_text.dart';
 import 'icon_widget.dart';
 
+/// Widget that displays the Bluetooth status.
 class BluetoothStatus extends StatelessWidget {
   const BluetoothStatus({super.key,required this.bluetoothStatus});
   final String bluetoothStatus;

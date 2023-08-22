@@ -1,5 +1,5 @@
-class ApiContants {
-  ApiContants();
+class ApiConstants {
+  ApiConstants();
   static const base_url = 'https://indeesapp.azurewebsites.net/api/pearl';
   static const languageBaseUrl =
       "https://indeesapp.azurewebsites.net/api/language";

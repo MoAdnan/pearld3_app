@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+/// Extension to provide utility methods for handling strings.
 extension StringUtils<T> on String {
+  /// Converts the first letter of the string to uppercase.
   String toTitleCase() {
     String title = this;
 
@@ -11,7 +13,9 @@ extension StringUtils<T> on String {
   }
 }
 
+/// Extension to provide utility methods for handling doubles.
 extension DoubleEntension<T> on double {
+  /// Rounds the double to a fixed number of digits after the decimal point.
   double roundToFixedDigits(int digit) {
     String inString = toStringAsFixed(digit); // '2.35'
     double inDouble = double.parse(inString);
@@ -19,12 +23,17 @@ extension DoubleEntension<T> on double {
   }
 }
 
+/// Extension to provide utility methods for handling BuildContext.
 extension BuildContextEntension<T> on BuildContext {
+  /// Retrieves the path for the logo image.
   String get logo => 'assets/images/app_logo_splash.png';
+
+  /// Retrieves the path for the logo image.
   String getLogo() {
     return 'assets/images/app_logo_splash.png';
   }
 
+  /// Retrieves the switch theme data.
   SwitchThemeData get switchThemeData {
     return SwitchThemeData(
       thumbColor: MaterialStateProperty.all(colorGrey),
@@ -33,12 +42,15 @@ extension BuildContextEntension<T> on BuildContext {
     );
   }
 
+  /// Retrieves the Checkbox theme data.
   CheckboxThemeData get checkboxThemeData {
     return CheckboxThemeData(
       checkColor: MaterialStateProperty.all(Colors.white),
       fillColor: MaterialStateProperty.all(primaryColor),
     );
   }
+
+  /// Retrieves the TextSelection theme data.
 
   TextSelectionThemeData get textSelectionThemeData {
     return TextSelectionThemeData(
@@ -47,6 +59,7 @@ extension BuildContextEntension<T> on BuildContext {
         selectionHandleColor: primaryColor);
   }
 
+  /// Retrieves the TextButton theme data.
   TextButtonThemeData get textButtonThemeData {
     return TextButtonThemeData(
         style: ButtonStyle(
@@ -98,19 +111,38 @@ extension BuildContextEntension<T> on BuildContext {
   TextStyle? get titleLarge => Theme.of(this).textTheme.titleLarge;
 
   TextStyle? get titleMedium => Theme.of(this).textTheme.titleMedium;
-  TextStyle? get titleMedium1 => Theme.of(this).textTheme.bodyLarge!.copyWith(color: Colors.black, fontSize: 22);
-  TextStyle? get titleMedium2 => Theme.of(this).textTheme.bodyMedium!.copyWith(color: Colors.black, fontSize: 15);
-  TextStyle? get titleMedium2Red => Theme.of(this).textTheme.bodyMedium!.copyWith(color: Colors.red, fontSize: 15,);
-  TextStyle? get titleMedium2Green => Theme.of(this).textTheme.bodyMedium!.copyWith(color: Colors.green, fontSize: 15,);
-  TextStyle? get titleMedium2Bold => Theme.of(this).textTheme.bodyMedium!.copyWith(color: Colors.black, fontSize: 15,fontWeight: FontWeight.w600);
+  TextStyle? get titleMedium1 => Theme.of(this)
+      .textTheme
+      .bodyLarge!
+      .copyWith(color: Colors.black, fontSize: 22);
+  TextStyle? get titleMedium2 => Theme.of(this)
+      .textTheme
+      .bodyMedium!
+      .copyWith(color: Colors.black, fontSize: 15);
+  TextStyle? get titleMedium2Red =>
+      Theme.of(this).textTheme.bodyMedium!.copyWith(
+            color: Colors.red,
+            fontSize: 15,
+          );
+  TextStyle? get titleMedium2Green =>
+      Theme.of(this).textTheme.bodyMedium!.copyWith(
+            color: Colors.green,
+            fontSize: 15,
+          );
+  TextStyle? get titleMedium2Bold => Theme.of(this)
+      .textTheme
+      .bodyMedium!
+      .copyWith(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w600);
   TextStyle? get titleSmallRed =>
       Theme.of(this).textTheme.titleSmall!.copyWith(color: Colors.red);
 
   TextStyle? get titleSmall => Theme.of(this).textTheme.titleSmall;
   TextStyle? get hintSmall =>
       const TextStyle(color: Colors.black54, fontSize: 13);
-  TextStyle? get hintLarge =>
-      Theme.of(this).textTheme.bodyLarge!.copyWith(color: colorGrey, fontSize: 18);
+  TextStyle? get hintLarge => Theme.of(this)
+      .textTheme
+      .bodyLarge!
+      .copyWith(color: colorGrey, fontSize: 18);
   TextStyle? get highlightSmall =>
       const TextStyle(color: Colors.blue, fontSize: 13);
 
@@ -179,7 +211,7 @@ extension BuildContextEntension<T> on BuildContext {
 
   Color get background => Theme.of(this).colorScheme.background;
 
-  //
+  /// Displays a bottom sheet with the given child widget.
   Future<T?> showBottomSheet(
     Widget child, {
     bool isScrollControlled = true,
@@ -209,22 +241,18 @@ extension BuildContextEntension<T> on BuildContext {
       required String cancelText,
       required VoidCallback? onConfirm,
       required VoidCallback? onCancel,
-      required  TextStyle? titleStyle,
-      required  TextStyle? buttonTextStyle,
+      required TextStyle? titleStyle,
+      required TextStyle? buttonTextStyle,
       Widget? content}) {
     showDialog(
       barrierDismissible: false,
       context: this,
       builder: (context) {
         return AlertDialog(
-
           titlePadding: const EdgeInsets.all(15),
           contentPadding: const EdgeInsets.all(10),
           backgroundColor: Colors.white,
-          title: Text(
-            title,
-          style: titleStyle
-          ),
+          title: Text(title, style: titleStyle),
           content: content,
           actions: [
             SizedBox(
@@ -233,7 +261,7 @@ extension BuildContextEntension<T> on BuildContext {
                 onPressed: onCancel,
                 child: Text(
                   cancelText,
-              style: buttonTextStyle,
+                  style: buttonTextStyle,
                 ),
               ),
             ),
@@ -241,9 +269,7 @@ extension BuildContextEntension<T> on BuildContext {
               height: 31,
               child: OutlinedButton(
                 onPressed: onConfirm,
-                child: Text(confirmText,
-               style: buttonTextStyle
-       ),
+                child: Text(confirmText, style: buttonTextStyle),
               ),
             )
           ],
@@ -256,7 +282,7 @@ extension BuildContextEntension<T> on BuildContext {
       String message) {
     return ScaffoldMessenger.of(this).showSnackBar(
       SnackBar(
-          duration: const Duration(milliseconds: 1000),
+        duration: const Duration(milliseconds: 1000),
         backgroundColor: const Color(0xffff5158),
         content: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -313,7 +339,7 @@ extension BuildContextEntension<T> on BuildContext {
       String message) {
     return ScaffoldMessenger.of(this).showSnackBar(
       SnackBar(
-          duration: const Duration(milliseconds: 1000),
+        duration: const Duration(milliseconds: 1000),
         backgroundColor: const Color(0xff40b368),
         content: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -337,10 +363,12 @@ extension BuildContextEntension<T> on BuildContext {
     );
   }
 
+  /// Exits the application.
   void exitApp() {
     SystemChannels.platform.invokeMethod('SystemNavigator.pop');
   }
 
+  /// Dismisses the keyboard.
   void dismissKeyboard() {
     SystemChannels.textInput.invokeMethod('TextInput.hide');
   }

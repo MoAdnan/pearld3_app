@@ -1,8 +1,11 @@
 part of 'qr_scan_cubit.dart';
 
+/// Represents the state of the QR code scanning process.
 class QrScanState extends Equatable {
+  /// The scanned QR code data represented as a [Barcode] instance.
   Barcode? code;
 
+  /// Factory constructor to create the initial state.
   factory QrScanState.initial() {
     return QrScanState();
   }
@@ -14,6 +17,7 @@ class QrScanState extends Equatable {
     this.code,
   });
 
+  /// Creates a copy of the state with optional new values.
   QrScanState copyWith({
     Barcode? code,
   }) {

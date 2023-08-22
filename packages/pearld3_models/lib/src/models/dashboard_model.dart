@@ -71,15 +71,30 @@ commonModelfromJson(Map<String, dynamic> json) => CommonModel(
       Output7: DateTime.parse(json["Output7"].toString()),
     );
 
+/// Represents input data for the database.
 class DbInputs {
+  /// The requested date for the data.
   DateTime? reqdate;
+
+  /// The unique identifier for the outlet.
   String? outletUID;
+
+  /// The device ID associated with the data.
   int? deviceID;
+
+  /// The reference identifier.
   String? refUID;
+
+  /// The key for the report.
   String? reportKey = '';
+
+  /// The width of the paper (default value: 560).
   int paperWidth = 560;
+
+  /// Indicates whether PDF mode is enabled (default value: false).
   bool pdfMode = false;
 
+  /// Creates a new [DbInputs] instance.
   DbInputs(
       {this.reqdate,
       this.outletUID,
@@ -88,6 +103,7 @@ class DbInputs {
       this.reportKey,
       this.paperWidth = 560});
 
+  /// Converts the [DbInputs] instance to a JSON representation.
   Map<String, dynamic> toJson() => {
         "reqdate": reqdate!.toIso8601String(),
         "outletUID": outletUID,
@@ -99,6 +115,7 @@ class DbInputs {
       };
 }
 
+/// Creates a [DbInputs] instance from a JSON map.
 dbInputsfromJson(Map<String, dynamic> json) => DbInputs(
     reqdate: DateTime.parse(json["reqdate"].toString()),
     outletUID: json["outletUID"].toString(),

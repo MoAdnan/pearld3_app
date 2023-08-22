@@ -1,68 +1,195 @@
+/// A class representing company settings.
 class CompanySettingModel {
+  /// The rounding value for currency.
   int? currncyRounding;
+
+  /// A special setting.
   bool? special;
+
+  /// Indicates whether a common print template is used for all customer group sales.
   bool? commonPrintTemplateForAllCustomerGroupSales;
+
+  /// Indicates whether to include depreciation at the balance sheet and profit and loss statement.
   bool? includeDepreciationAtBSPNL;
+
+  /// Indicates whether to load all routes at the time of purchase order creation.
   bool? loadAllRoutesAtPurchaseOrder;
+
+  /// Indicates whether production is in alternative quantity.
   bool? productionInAlterNativeQuantity;
+
+  /// Indicates whether to keep load requests until approval.
   bool? keepLoadRequestUntileAprove;
+
+  /// Indicates whether to allow changing production floor.
   bool? allowChangeProductionFloor;
+
+  /// Indicates whether to show all items for production row material.
   bool? showAllItemsForProductionRowMaterial;
+
+  /// Indicates whether accounting entry is mandatory at production.
   bool? accountingEntryIsMandatoryAtProduction;
+
+  /// The rounding value for quantity.
   int? quantityRounding;
+
+  /// Indicates whether to allow outlet-wise price management.
   bool? allowOutletwisePriceManagement;
+
+  /// Indicates whether to show only items in price history.
   bool? onlyShowItemsInPriceHistory;
+
+  /// Indicates whether to allow editing item names at invoice.
   bool? allowEditItemNameAtInvoice;
+
+  /// Indicates whether to sync only with the cloud.
   bool? cloudSyncOnly;
+
+  /// Indicates whether the maximum price is used as the default price.
   bool? maxPriceAsDefaultPrice;
+
+  /// Indicates whether cost of goods return is the same as cost of goods sold.
   bool? costOfGoodsReturnSameAsCostOfGoodsSold;
+
+  /// Indicates whether to disable tax on no-reference return.
   bool? disableTaxOnNoReferanceReturn;
+
+  /// The number of days considered for previous price.
   int? numberOfDaysConsiderForPreviousPrice;
+
+  /// The maximum period for return.
   int? maximumPeriodForReturn;
+
+  /// The default currency format.
   String? defaultCurrencyFormat;
+
+  /// The maximum promotion percentage.
   String? maxPromotionPerc;
+
+  /// The currency rounding account.
   String? currencyRoundingAccount;
+
+  /// The default account for item promotions.
   String? defaultItemPromotionAccount;
+
+  /// The default account for cash promotions.
   String? defaultCashPromotionAccount;
+
+  /// The costing mode used for calculations.
   int? costingMode;
+
+  /// The point at which the order is invoiced.
   int? invoiceTheOrderAt;
+
+  /// The maximum ratio of quantity consumption.
   double? maxQuantityConsumptionRatio;
+
+  /// The ratio of Bill of Materials (BOM) and output.
   double? bomAndOutputRatio;
+
+  /// Indicates whether to show sales discounts on customer statements.
   bool? showSalesDiscountCustomerStatement;
+
+  /// Indicates whether to show customer statements towards collection.
   bool? towardsColCustomerStatement;
+
+  /// Allows the use of the code "21111131" for auto posting.
   bool? allow21111131AtAutoPosting;
+
+  /// Allows sequential bill numbers in accounts.
   bool? allowSequentialBillNoAccounts;
+
+  /// Indicates whether bill numbers are written based on the month.
   bool? isBillNoWrtByMonth;
+
+  /// Indicates whether bill numbers are written based on the year.
   bool? isBillNoWrtByYear;
+
+  /// Indicates whether bill numbers are written without any pattern.
   bool? isBillNoWrtByNone;
+
+  /// Allows reference numbers at cash and bank statements.
   bool? allowRefnoAtCashAndBankStatement;
+
+  /// The start date of transactions.
   String? transactionStartDate;
+
+  /// The user ID for special expenses credit account.
   String? smExpCrAccountUID;
+
+  /// Allows inline narration in entries.
   bool? allowInlineNarration;
+
+  /// Allows automatic narration generation.
   bool? allowAutoNarration;
+
+  /// The default date and time format.
   String? defaultDateTimeFormat;
+
+  /// The default time zone in minutes.
   int? defaultTimeZoneInMinute;
+
+  /// The default long date and time format.
   String? defaultDateTimeLongFormat;
+
+  /// Holds accounting narrations. (Nullable)
   Null? accountingNarrations;
+
+  /// Indicates whether matrix printing is allowed.
   bool? allowMatrixPrint;
+
+  /// Indicates whether to allow summary footer in matrix printing.
   bool? allowMatrixPrintSummaryFooter;
+
+  /// Indicates whether to allow net total header in matrix printing.
   bool? allowMatrixPrintNetTotalHeader;
+
+  /// Indicates whether to use a digital invoice builder.
   bool? useDigitalInvoiceBuilder;
+
+  /// Indicates whether to use digital invoices.
   bool? useDigitalInvoice;
+
+  /// Indicates whether to use month-wise invoices.
   bool? useMonthWiseInvoice;
+
+  /// Maximum hours for returning deliveries.
   int? deliveryRtnMaxHours;
+
+  /// Blocks duplication of supplier invoices.
   bool? blockSupplierInvoiceDuplication;
+
+  /// Allows automated promotion entry.
   bool? allowAutomatedPromotionEntry;
+
+  /// Allows MTN (Mobile Transfer Number) quantity in purchase orders.
   bool? allowMtnQtyInPurchaseOrder;
+
+  /// Allows prior entry date in the accounts module.
   bool? allowPriorEntryDateInAccountsModule;
+
+  /// Indicates whether batch numbers are allowed.
   bool? isBatchNoAllowed;
+
+  /// Indicates whether batch numbers are mandatory.
   bool? isBatchNoMandatory;
+
+  /// Indicates whether reconciliation towards expenses is allowed.
   bool? isReconcileTowardsExpenseAllowed;
+
+  /// Indicates whether new stock issuance is allowed.
   bool? isNewStockIssue;
+
+  /// Indicates whether customer codes are auto-generated.
   bool? autoGenerateCustomerCode;
+
+  /// Indicates whether alternate kilo is hidden from stock reports.
   bool? hideAltKiloFromStkReport;
+
+  /// Indicates whether either debit or credit is accepted.
   bool? eitherDebitOrCredit;
 
+  /// Creates a [CompanySettingModel] instance with the specified settings.
   CompanySettingModel(
       {this.currncyRounding,
       this.special,
@@ -128,6 +255,7 @@ class CompanySettingModel {
       this.hideAltKiloFromStkReport,
       this.eitherDebitOrCredit});
 
+  /// Converts the [CompanySettingModel] instance into a JSON representation.
   Map<String, dynamic> toJson() {
     return {
       'currncyRounding': currncyRounding,
@@ -203,6 +331,7 @@ class CompanySettingModel {
     };
   }
 
+  /// Creates a [CompanySettingModel] instance from a JSON representation.
   factory CompanySettingModel.fromJson(Map<String, dynamic> map) {
     return CompanySettingModel(
       currncyRounding: map['currncyRounding'],

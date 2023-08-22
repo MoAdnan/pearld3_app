@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pearld3_util/pearld3_util.dart';
 import 'package:pearld3_views/pearld3_views.dart';
 
+/// Represents the screen displayed when there is no network connectivity.
 class NoNetworkScreen extends StatelessWidget {
   const NoNetworkScreen({super.key});
 
@@ -16,13 +17,14 @@ class NoNetworkScreen extends StatelessWidget {
             children: [
               Icon(
                 Icons.wifi_off,
-              size: 60,  color: context.errorColor,
-
+                size: 60,
+                color: context.errorColor,
               ),
               kHeight24,
               Text(
                 'no_network_title'.tr(),
-                style: context.bodyLarge!.copyWith(color: context.errorColor,fontSize: 17),
+                style: context.bodyLarge!
+                    .copyWith(color: context.errorColor, fontSize: 17),
               ),
               kHeight12,
               Text(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pearld3_util/pearld3_util.dart';
 import 'icon_widget.dart';
 
+/// A widget that displays an underlined text field with an icon.
 class UnderLinedField extends StatelessWidget {
   UnderLinedField(
       {super.key,
@@ -45,7 +46,6 @@ class UnderLinedField extends StatelessWidget {
             IconWidget(icon: icon, color: iconColor, onTap: onChanged)
           ],
         );
-
       },
     );
   }

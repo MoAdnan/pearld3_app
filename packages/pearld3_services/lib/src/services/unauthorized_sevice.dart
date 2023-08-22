@@ -4,15 +4,16 @@ import '../models/app_error_model.dart';
 import 'api_const.dart';
 import 'dio_interceptor.dart';
 
+/// This class provides methods to make unauthorized requests using Dio.
 class UnAuthorizedService {
   String baseUrl;
 
-  UnAuthorizedService({this.baseUrl = ApiContants.base_test_url});
+  UnAuthorizedService({this.baseUrl = ApiConstantsT.base_test_url});
 
   static Dio createDio() {
     var dio = Dio(BaseOptions(
-      baseUrl: ApiContants.base_test_url,
-      headers: ApiContants.testHeader,
+      baseUrl: ApiConstantsT.base_test_url,
+      headers: ApiConstantsT.testHeader,
       followRedirects: false,
       validateStatus: (status) {
         return status! < 500;
@@ -28,7 +29,7 @@ class UnAuthorizedService {
   }
 
   Dio _dio = Dio(BaseOptions(
-    headers: ApiContants.testHeader,
+    headers: ApiConstantsT.testHeader,
     followRedirects: false,
     validateStatus: (status) {
       return status! < 500;
@@ -39,9 +40,11 @@ class UnAuthorizedService {
     receiveTimeout: Duration(seconds: 30),
   ));
 
+  /// Retrieves languages by their name.
+
   Future<Map<String, dynamic>?> getLanguagesByName(String language) async {
     try {
-      _dio.options.baseUrl = ApiContants.languageBaseUrl;
+      _dio.options.baseUrl = ApiConstantsT.languageBaseUrl;
       final response = await _dio.get('/LanguagesByName/$language');
       if (response.statusCode == 200) {
 
@@ -50,10 +53,10 @@ class UnAuthorizedService {
     } on DioException catch (e) {
     }
   }
-
+  /// Retrieves a list of languages.
   Future<List<dynamic>?> getLanguages() async {
     try {
-      _dio.options.baseUrl = ApiContants.languageBaseUrl;
+      _dio.options.baseUrl = ApiConstantsT.languageBaseUrl;
 
       final response = await _dio.get('/getlanguages');
 
@@ -64,12 +67,12 @@ class UnAuthorizedService {
     }
     return [];
   }
-
+  /// Retrieves configuration data based on the provided email.
   Future<Either<Map<String, dynamic>, Map<String, dynamic>>> getConfiguration(
       {required String email}) async {
     try {
       _dio.options.baseUrl = '';
-      final response = await _dio.get('${ApiContants.base_url}/$email');
+      final response = await _dio.get('${ApiConstantsT.base_url}/$email');
       if (response.statusCode == 200) {
         return Right(response.data['settings']);
       } else {
@@ -93,7 +96,7 @@ class UnAuthorizedService {
       }
     }
   }
-
+  /// Performs login using the provided credentials and service URL.
   Future<Either<Map<String, dynamic>, Map<String, dynamic>>> login(
       {required Map<String, dynamic> credential,
       required String serviceUrl}) async {
@@ -125,7 +128,7 @@ class UnAuthorizedService {
       }
     }
   }
-
+  /// Registers a device using the provided credential and service URL.
   Future<String> registerDevice(
       {required Map<String, dynamic> credential,
       required String serviceUrl}) async {

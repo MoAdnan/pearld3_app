@@ -10,9 +10,9 @@ import 'package:bloc/bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/widgets.dart';
 
-import 'app.dart';
-import 'http_asset_loader/http_asset_loader.dart';
-
+/// The [BlocObserver] for the application.
+///
+/// This observer logs events and errors of BLoCs to the console.
 class AppBlocObserver extends BlocObserver {
   const AppBlocObserver();
 
@@ -33,6 +33,13 @@ class AppBlocObserver extends BlocObserver {
 //   // make sure you call `initializeApp` before using other Firebase services.
 //   await Firebase.initializeApp();
 // }
+
+/// Initializes and boots the application.
+///
+/// This function handles common initialization tasks such as configuring error
+/// handling, setting up BLoC observation, initializing localization,
+/// hydrating BLoCs, and starting the application with the provided builder.
+
 Future<void> bootstrap(FutureOr<Widget> Function() builder) async {
   FlutterError.onError = (details) {
     log(details.exceptionAsString(), stackTrace: details.stack);
@@ -41,14 +48,17 @@ Future<void> bootstrap(FutureOr<Widget> Function() builder) async {
   Bloc.observer = const AppBlocObserver();
 
   // Add cross-flavor configuration here
+  // Initialize WidgetsFlutterBinding and localization
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
+  // Configure HydratedBloc storage
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: kIsWeb
         ? HydratedStorage.webStorageDirectory
         : await getTemporaryDirectory(),
   );
   // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  // Initialize dependency injection
   unawaited(getIt.init());
   runApp(await builder());
 }

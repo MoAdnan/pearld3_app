@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pearld3_util/pearld3_util.dart';
-
 import '../../../../pearld3_views.dart';
 
+/// Represents a button that displays an icon and responds to taps.
 class CountButton extends StatelessWidget {
   final Function() onTap;
   final IconData icon;
@@ -10,7 +10,7 @@ class CountButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  InkWell(
+    return InkWell(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(

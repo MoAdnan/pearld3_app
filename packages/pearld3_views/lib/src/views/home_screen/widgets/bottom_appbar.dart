@@ -4,8 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pearld3_states/pearld3_states.dart';
 import 'package:pearld3_util/utilites/context_extensions.dart';
 
-import '../../widget/double_un_tick.dart';
-
+/// A custom BottomAppBar widget that displays information about orders and weight.
 class CustomBottomAppBar extends StatelessWidget {
   const CustomBottomAppBar({super.key});
 

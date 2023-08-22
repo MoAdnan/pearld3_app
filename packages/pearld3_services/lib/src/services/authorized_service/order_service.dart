@@ -1,9 +1,9 @@
-
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 
 import '../../models/app_error_model.dart';
 
+/// This class provides methods for making API calls related to orders.
 class OrderService {
   String baseUrl;
   String token;
@@ -15,16 +15,16 @@ class OrderService {
   Dio get _dio {
     return Dio(BaseOptions(
         receiveDataWhenStatusError: true,
-        baseUrl: baseUrl, headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token'
-    }));
+        baseUrl: baseUrl,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        }));
   }
 
+  /// Retrieves a list of orders based on provided [body] parameters.
   Future<Either<Map<String, dynamic>, List<dynamic>>> getOrders(
       {required Map<String, dynamic> body}) async {
-
-
     try {
       final response = await _dio.post(
         'picking/PickingList',
@@ -43,8 +43,7 @@ class OrderService {
                   message: e.response!.statusMessage)
               .toJson());
         } else {
-          return Left(
-              Status(code: 0, message: 'Invalid request').toJson());
+          return Left(Status(code: 0, message: 'Invalid request').toJson());
         }
       } else {
         return Left(Status(code: 0, message: 'Unknown error').toJson());
@@ -54,14 +53,12 @@ class OrderService {
 
 
 
+  /// Retrieves images for a specific item based on its [itemUid].
   Future<Either<Map<String, dynamic>, List<dynamic>>> getItemImages(
       {required String itemUid}) async {
-
-
     try {
       final response = await _dio.get(
         'indent/GetAttachmentDataByID/$itemUid',
-
       );
       if (response.statusCode == 200) {
         return Right(response.data);
@@ -72,12 +69,11 @@ class OrderService {
       if (e is DioException) {
         if (e.response != null) {
           return Left(Status(
-              code: e.response!.statusCode,
-              message: e.response!.statusMessage)
+                  code: e.response!.statusCode,
+                  message: e.response!.statusMessage)
               .toJson());
         } else {
-          return Left(
-              Status(code: 0, message: 'Invalid request').toJson());
+          return Left(Status(code: 0, message: 'Invalid request').toJson());
         }
       } else {
         return Left(Status(code: 0, message: 'Unknown error').toJson());
@@ -86,28 +82,53 @@ class OrderService {
   }
 
 
+  /// Retrieves the next order for the picker based on provided [body] parameters.
 
-
-  Future<Either<Map<String, dynamic>,Map<String, dynamic>>> getNewOrderForPicker(
-      {required Map<String, dynamic> body}) async {
-
+  Future<Either<Map<String, dynamic>, Map<String, dynamic>>>
+      getNewOrderForPicker({required Map<String, dynamic> body}) async {
     try {
       final response = await _dio.post(
         'picking/GetNextOrder',
         data: body,
       );
       if (response.statusCode == 200) {
-
-        if(response.data!=null){
-
+        if (response.data != null) {
           return Right(response.data);
-        }
-        else
-          {
-
+        } else {
           return Left(Status(code: 1, message: 'No new orders').toJson());
-          }
-
+        }
+      } else {
+        return Left(Status(code: 1, message: 'Invalid token').toJson());
+      }
+    } on Exception catch (e) {
+      if (e is DioException) {
+        if (e.response != null) {
+          return Left(Status(
+                  code: e.response!.statusCode,
+                  message: e.response!.statusMessage)
+              .toJson());
+        } else {
+          return Left(Status(code: 0, message: 'Invalid request').toJson());
+        }
+      } else {
+        return Left(Status(code: 0, message: 'Unknown error').toJson());
+      }
+    }
+  }
+  Future<Either<Map<String, dynamic>, Map<String, dynamic>>>
+  getPrintImage({required Map<String, dynamic> body}) async {
+    try {
+      final response = await _dio.post(
+        'dashboard/PrintDocumentsNew',
+        data: body,
+      );
+      if (response.statusCode == 200) {
+        if (response.data != null) {
+          print(response.data[['data']]);
+          return Right(response.data);
+        } else {
+          return Left(Status(code: 1, message: 'No new orders').toJson());
+        }
       } else {
         return Left(Status(code: 1, message: 'Invalid token').toJson());
       }
@@ -119,36 +140,29 @@ class OrderService {
               message: e.response!.statusMessage)
               .toJson());
         } else {
-          return Left(
-              Status(code: 0, message: 'Invalid request').toJson());
+          return Left(Status(code: 0, message: 'Invalid request').toJson());
         }
       } else {
         return Left(Status(code: 0, message: 'Unknown error').toJson());
       }
     }
   }
-  Future<Either<Map<String, dynamic>,Map<String, dynamic>>> getNewOrderForChecker(
-      {required Map<String, dynamic> body}) async {
 
+  /// Retrieves the next order for the checker based on provided [body] parameters.
+
+  Future<Either<Map<String, dynamic>, Map<String, dynamic>>>
+      getNewOrderForChecker({required Map<String, dynamic> body}) async {
     try {
       final response = await _dio.post(
         'picking/GetNextOrderByUID',
         data: body,
       );
       if (response.statusCode == 200) {
-
-
-
-        if(response.data!=null){
-
+        if (response.data != null) {
           return Right(response.data);
-        }
-        else
-        {
-
+        } else {
           return Left(Status(code: 1, message: 'No new orders').toJson());
         }
-
       } else {
         return Left(Status(code: 1, message: 'Invalid token').toJson());
       }
@@ -156,12 +170,11 @@ class OrderService {
       if (e is DioException) {
         if (e.response != null) {
           return Left(Status(
-              code: e.response!.statusCode,
-              message: e.response!.statusMessage)
+                  code: e.response!.statusCode,
+                  message: e.response!.statusMessage)
               .toJson());
         } else {
-          return Left(
-              Status(code: 0, message: 'Invalid request').toJson());
+          return Left(Status(code: 0, message: 'Invalid request').toJson());
         }
       } else {
         return Left(Status(code: 0, message: 'Unknown error').toJson());
@@ -169,37 +182,39 @@ class OrderService {
     }
   }
 
-  Future<Either<Map<String, dynamic>,Map<String, dynamic>>> changeItemStatus(
-      {required Map<String, dynamic> body}) async {
+  /// Changes the status of an item based on provided [body] parameters.
 
+  Future<Either<Map<String, dynamic>, Map<String, dynamic>>> changeItemStatus(
+      {required Map<String, dynamic> body}) async {
     try {
       final response = await _dio.post(
         'picking/UpdatePickedStatus',
         data: body,
       );
       if (response.statusCode == 200) {
-
-        if(response.data!=null){
-          return Right(Status(message: response.data['message'],code: response.statusCode).toJson());
+        if (response.data != null) {
+          return Right(Status(
+                  message: response.data['message'], code: response.statusCode)
+              .toJson());
+        } else {
+          return Left(
+              Status(code: response.statusCode, message: response.statusMessage)
+                  .toJson());
         }
-        else
-        {
-          return Left(Status(code: response.statusCode, message: response.statusMessage).toJson());
-        }
-
       } else {
-        return Left(Status(code: response.statusCode, message: response.statusMessage).toJson());
+        return Left(
+            Status(code: response.statusCode, message: response.statusMessage)
+                .toJson());
       }
     } on Exception catch (e) {
       if (e is DioException) {
         if (e.response != null) {
           return Left(Status(
-              code: e.response!.statusCode,
-              message: e.response!.statusMessage)
+                  code: e.response!.statusCode,
+                  message: e.response!.statusMessage)
               .toJson());
         } else {
-          return Left(
-              Status(code: 0, message: 'Invalid request').toJson());
+          return Left(Status(code: 0, message: 'Invalid request').toJson());
         }
       } else {
         return Left(Status(code: 0, message: 'Unknown error').toJson());
@@ -207,25 +222,21 @@ class OrderService {
     }
   }
 
+  /// Saves an order based on provided [body] parameters.
 
-  Future<Either<Map<String, dynamic>,Map<String,dynamic>>> saveOrder(
+  Future<Either<Map<String, dynamic>, Map<String, dynamic>>> saveOrder(
       {required Map<String, dynamic> body}) async {
-
     try {
       final response = await _dio.post(
         'picking/PickingComplete',
         data: body,
       );
       if (response.statusCode == 200) {
-
-        if(response.data!=null){
+        if (response.data != null) {
           return Right(response.data);
-        }
-        else
-        {
+        } else {
           return Left(Status(code: 1, message: 'Error occurred').toJson());
         }
-
       } else {
         return Left(Status(code: 1, message: 'Invalid token').toJson());
       }
@@ -233,12 +244,11 @@ class OrderService {
       if (e is DioException) {
         if (e.response != null) {
           return Left(Status(
-              code: e.response!.statusCode,
-              message: e.response!.statusMessage)
+                  code: e.response!.statusCode,
+                  message: e.response!.statusMessage)
               .toJson());
         } else {
-          return Left(
-              Status(code: 0, message: 'Invalid request').toJson());
+          return Left(Status(code: 0, message: 'Invalid request').toJson());
         }
       } else {
         return Left(Status(code: 0, message: 'Unknown error').toJson());
@@ -246,9 +256,10 @@ class OrderService {
     }
   }
 
+  /// Retrieves items for a specific order based on provided [body] parameters.
+
   Future<Either<Map<String, dynamic>, List<dynamic>>> getItems(
       {required Map<String, dynamic> body}) async {
-
     try {
       final response = await _dio.post(
         '/picking/GetOrderItems',
@@ -260,21 +271,18 @@ class OrderService {
         return Left(Status(code: 1, message: 'invalid token').toJson());
       }
     } on Exception catch (e) {
-
       if (e is DioException) {
         if (e.response != null) {
           return Left(Status(
-              code: e.response!.statusCode,
-              message: e.response!.statusMessage)
+                  code: e.response!.statusCode,
+                  message: e.response!.statusMessage)
               .toJson());
         } else {
-          return Left(
-              Status(code: 0, message: 'Invalid request').toJson());
+          return Left(Status(code: 0, message: 'Invalid request').toJson());
         }
       } else {
         return Left(Status(code: 0, message: 'Unknown error').toJson());
       }
-
     }
   }
 }

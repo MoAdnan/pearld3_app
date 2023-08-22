@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -52,12 +53,11 @@ class ProductBottomSheet extends StatelessWidget {
       return 'unpick'.tr();
     }
   }
+
   String get checkButtonTitle {
     switch (item.status) {
       case 0:
-        {
-
-        }
+        {}
         break;
       case 1:
         {
@@ -77,6 +77,7 @@ class ProductBottomSheet extends StatelessWidget {
       return 'unpick'.tr();
     }
   }
+
   num count = 0;
   bool isCountAndMaxEqual = false;
   void _updateStatus(
@@ -107,7 +108,6 @@ class ProductBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final checkingStatus = context
         .read<LoginBloc>()
         .state
@@ -115,8 +115,14 @@ class ProductBottomSheet extends StatelessWidget {
         .userCredential!
         .deviceSetting!
         .checkStatusList;
-  productCheckStartingStatus =  context.read<LoginBloc>().state.credential!.userCredential!.deviceSetting!.productCheckStartingStatus ;
 
+    productCheckStartingStatus = context
+        .read<LoginBloc>()
+        .state
+        .credential!
+        .userCredential!
+        .deviceSetting!
+        .productCheckStartingStatus;
 
     countController.text = item.quantity.toString();
     final orderState = context.read<OrderViewBloc>().state;
@@ -128,7 +134,7 @@ class ProductBottomSheet extends StatelessWidget {
             topRight: Radius.circular(30),
           ),
         ),
-        height: 500,
+        height: 550,
         child: Container(
           padding: const EdgeInsets.all(15),
           child: Column(
@@ -168,7 +174,14 @@ class ProductBottomSheet extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      (orderState.order.status != context.read<LoginBloc>().state.credential!.userCredential!.deviceSetting!.productCheckEndingStatus)
+                      (orderState.order.status !=
+                              context
+                                  .read<LoginBloc>()
+                                  .state
+                                  .credential!
+                                  .userCredential!
+                                  .deviceSetting!
+                                  .productCheckEndingStatus)
                           ? ValueListenableBuilder(
                               valueListenable: isChecked,
                               builder: (context, value, child) {
@@ -182,10 +195,20 @@ class ProductBottomSheet extends StatelessWidget {
                                       activeColor: context.primaryColor,
                                       value: value,
                                       onChanged: (value) {
-                                        final checkLIst = context.read<LoginBloc>().state.credential!.userCredential!.deviceSetting!.checkStatusList;
-                                        if (item.status != checkLIst.last) {
-                                          isChecked.value = value;
-                                        }
+                                        final checkLIst = context
+                                            .read<LoginBloc>()
+                                            .state
+                                            .credential!
+                                            .userCredential!
+                                            .deviceSetting!
+                                            .checkStatusList;
+
+//old method - commented below works fine but no option to add stock after NO STOCK entry
+                                        // if (item.status != checkLIst.last) {
+                                        //   isChecked.value = value;
+                                        // }
+
+                                        isChecked.value = value;
                                       },
                                     ),
                                   ),
@@ -222,7 +245,10 @@ class ProductBottomSheet extends StatelessWidget {
                               builder: (context, value, _) {
                                 return !isChecked.value
                                     ? BottomSheetButtonWidget(
-                                        buttonName:productCheckStartingStatus==32 ? checkButtonTitle : pickButtonTitle,
+                                        buttonName:
+                                            productCheckStartingStatus == 32
+                                                ? checkButtonTitle
+                                                : pickButtonTitle,
                                         color: Colors.green,
                                         onButtonClick: () {
                                           final checkingStatus = context
@@ -272,28 +298,65 @@ class ProductBottomSheet extends StatelessWidget {
                   ValueListenableBuilder(
                     valueListenable: isChecked,
                     builder: (context, value, child) {
-
-                      return item.status != checkingStatus.last && isChecked.value
+                      return
+                          //old method - commented below works fine but no option to add stock after NO STOCK entry
+                          // item.status != checkingStatus.last &&
+                          //       isChecked.value
                           //out of stock button is in inside InputExtraNotesWidget
-                          ? BottomSheetFooter(
-                              onChange: (val) {
-                                count = val;
-                              },
-                          item: item,
-                              onButtonClick: () {
-                                // item set as no stock
+                          Column(
+                        children: [
+                          isChecked.value
+                              ? BottomSheetFooter(
+                                  // passing in Stock button Widget to Footer for only apply when count==item count
+                                  inStockWidget: BottomSheetButtonWidget(
+                                    buttonName: 'In Stock',
+                                    color: Colors.green,
+                                    onButtonClick: () {
+                                      final checkingStatus = context
+                                          .read<LoginBloc>()
+                                          .state
+                                          .credential!
+                                          .userCredential!
+                                          .deviceSetting!
+                                          .checkStatusList;
+                                      // item is currently Out of Stock
+                                      _updateStatus(
+                                          context, checkingStatus[1], '');
+                                      // item picked
+                                      context.pop();
+                                    },
+                                  ),
+                                  onChange: (val) {
+                                    count = val;
+                                  },
+                                  item: item,
+                                  onButtonClick: () {
+                                    // item set as no stock
 
-
-                                _updateStatus(context, checkingStatus.last,
-                                    count.toString());
-                              })
-                          : const SizedBox();
+                                    _updateStatus(context, checkingStatus.last,
+                                        count.toString());
+                                  })
+                              : const SizedBox(
+                                  height: 37,
+                                ),
+                        ],
+                      );
                     },
                   ),
+                  //old method - commented below works fine but no option to add stock after NO STOCK entry
+
+                  // item.status == checkingStatus.last
+                  //no stock showing details
                   item.status == checkingStatus.last
-                      //no stock showing details
-                      ? ShowExtraNotesWidget(
-                          hintText: item.extraNote,
+                      ? Column(
+                          children: [
+                            const SizedBox(
+                              height: 30,
+                            ),
+                            ShowExtraNotesWidget(
+                              hintText: item.extraNote,
+                            ),
+                          ],
                         )
                       : const SizedBox()
                 ],

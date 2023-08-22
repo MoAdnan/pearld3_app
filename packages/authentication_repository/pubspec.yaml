@@ -18,6 +18,7 @@ dependencies:
   pearld3_util:
     path: ../pearld3_util
   shared_preferences: ^2.1.2
+  dartdoc: ^6.2.2
 
 dev_dependencies:
   flutter_test:

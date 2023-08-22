@@ -1,22 +1,27 @@
-import 'dart:convert';
+
 import 'dart:io';
 
+import 'package:pearld3_blue/pearld3_blue.dart';
 
-import 'package:image/image.dart';
-import 'package:indees_esc_pos_utils/esc_pos_utils.dart';
 import 'package:pearld3_models/pearld3_models.dart';
+import 'package:pearld3_util/utilites/testImage.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
 
-class BluePrint{
 
+/// A utility class for handling Bluetooth thermal printing.
+class BluePrint {
+  final _pearld3Blue = Pearld3Blue.instance;
   BluePrint();
-  Future<bool> get connectionStatus{
 
-    return PrintBluetoothThermal.connectionStatus;
+  /// Checks the connection status of the Bluetooth printer.
+  Future<bool?> get isConnected async{
+    final isConnected  = await _pearld3Blue.isConnected;
+    return isConnected;
   }
-  Future<List<BlueDevice>> getBluetoothDevices() async {
 
+  /// Retrieves a list of paired Bluetooth devices.
+  Future<List<BlueDevice>> getBluetoothDevices() async {
+///     Request Bluetooth permissions on Android.
     if (Platform.isAndroid) {
       Map<Permission, PermissionStatus> statuses = await [
         Permission.bluetoothScan,
@@ -27,88 +32,73 @@ class BluePrint{
         return [];
       }
     }
-    final List<BluetoothInfo> listResult = await PrintBluetoothThermal.pairedBluetooths;
+    final List<BluetoothDevice> listResult =
+        await _pearld3Blue.getBondedDevices();
 
-final blueDevices = listResult.map((e) => BlueDevice(name: e.name, address: e.macAdress)).toList();
-
+    final blueDevices = listResult
+        .map((e) => BlueDevice( e.name!,  e.address!,))
+        .toList();
 
     return blueDevices;
+  }
+
+  /// Disconnects from the Bluetooth printer.
+  Future<bool?> disConnect() async {
+
+ try {
+   final result = await _pearld3Blue.disconnect();
+   return result;
+ } on Exception catch (e) {
+  print(e.toString());
+  return null;
+ }
 
 
 
   }
-  Future<bool> disConnect() async {
 
-    final bool result = await PrintBluetoothThermal.disconnect;
+  /// Connects to the specified Bluetooth printer.
+  Future<bool?> connect(BlueDevice device) async {
 
+
+
+
+        try {
+          final result = await _pearld3Blue.connect(BluetoothDevice.fromMap(device.toMap()));
+          return result;
+        } on Exception catch (e) {
+          print(e.runtimeType);
+          print(e.toString());
+        }
+
+
+  }
+
+  /// Performs a test print on the connected Bluetooth printer.
+  Future<bool?> testPrint() async {
+    final result = await
+  _pearld3Blue.printReceiptImageFromBase64(image: image);
     return result;
+  }
 
+  /// Prints an image on the connected Bluetooth printer.
+  Future<bool?> printImage(String image) async {
+    final result = await
+   _pearld3Blue.printReceiptImageFromBase64(image: image);
+    return result;
+  }
+
+  Future<bool?> printPeald3Label(List<dynamic> data) async {
+    final result = await
+    _pearld3Blue.printPearld3Label(data);
+    return result;
   }
 
 
-  Future<bool> connect(BlueDevice device) async {
-    disConnect();
 
-    final bool result = await PrintBluetoothThermal.connect(macPrinterAddress: device.address);
-
-return result;
-
-  }
+/// Retrieves a list of bytes representing a graphics ticket for an image.
 
 
-  Future<bool> testPrint() async {
-    bool connectionStatus = await PrintBluetoothThermal.connectionStatus;
+  /// Retrieves a list of bytes representing a test ticket.
 
-    if (connectionStatus) {
-      List<int> ticket = await getTestTicket();
-      final result = await PrintBluetoothThermal.writeBytes(ticket);
-      return result;
-    } else {
-      return false;
-    }
-  }
-
-  Future<bool> printImage(String image) async {
-    bool conncectionStatus = await PrintBluetoothThermal.connectionStatus;
-
-    if (conncectionStatus) {
-      List<int> ticket = await getGraphicsTicket(image);
-      final result = await PrintBluetoothThermal.writeBytes(ticket);
-return result;
-    } else {
-     return false;
-    }
-  }
-  Future<List<int>> getGraphicsTicket(String base64Image) async {
-    List<int> bytes = [];
-
-    CapabilityProfile profile = await CapabilityProfile.load();
-    final generator = Generator(PaperSize.mm80, profile, spaceBetweenRows: 0);
-
-    final buffer = base64Decode(base64Image);
-
-    final image = decodeImage(buffer);
-
-    bytes += generator.image(image!);
-
-
-    return bytes;
-  }
-
-  Future<List<int>> getTestTicket() async {
-    List<int> bytes = [];
-
-    CapabilityProfile profile = await CapabilityProfile.load();
-    final generator = Generator(PaperSize.mm80, profile, spaceBetweenRows: 0);
-
-
-    bytes += generator.emptyLines(1);
-    bytes += generator.qrcode('Test Print',size: QRSize.Size8);
-    bytes += generator.emptyLines(1);
-    bytes += generator.text('Test Print',styles: PosStyles(align: PosAlign.center));
-    bytes += generator.emptyLines(1);
-
-
-    return bytes;
-  }
 }

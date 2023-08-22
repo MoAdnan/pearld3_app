@@ -6,12 +6,20 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 part 'qr_scan_state.dart';
 
+/// Represents the Cubit responsible for managing QR code scanning functionality.
 class QrScanCubit extends Cubit<QrScanState> {
   BuildContext context;
+
+  /// Creates a [QrScanCubit] instance with the provided [context].
   QrScanCubit(this.context) : super(QrScanState.initial());
   QRViewController? controller;
+
+  /// Initiates the QR code scanning process.
   void scan() {}
 
+  /// Builds the QR code scanning view.
+  ///
+  /// The scan area and overlay are adjusted based on the device's screen size.
   Widget _buildQrView(BuildContext context, Key key) {
     // For this example we check how width or tall the device is and change the scanArea and overlay accordingly.
     var scanArea = (MediaQuery.of(context).size.width < 400 ||
@@ -33,6 +41,7 @@ class QrScanCubit extends Cubit<QrScanState> {
     );
   }
 
+  /// Callback when the QR code view is created.
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
 
@@ -49,10 +58,11 @@ class QrScanCubit extends Cubit<QrScanState> {
     });
   }
 
+  /// Callback when permission to access the camera is set.
   void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
     if (!p) {
       ScaffoldMessenger.of(context).showSnackBar(
-         SnackBar(content: Text('no_permission'.tr())),
+        SnackBar(content: Text('no_permission'.tr())),
       );
     }
   }

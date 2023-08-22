@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,11 +15,17 @@ import 'package:pearld3_views/src/views/home_screen/widgets/order_tile.dart';
 import '../widget/circular_progress.dart';
 import '../widget/logout_button.dart';
 
+/// The main screen of the application displaying the order list.
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
-  ValueNotifier<DateTime> _selectedDate = ValueNotifier(DateTime.now());
+
+  /// A [ValueNotifier] to hold the selected date for filtering orders.
+  final ValueNotifier<DateTime> _selectedDate = ValueNotifier(DateTime.now());
+
+  /// A focus node for controlling the keyboard focus.
   FocusNode focusNode = FocusNode();
 
+  /// Handles the back button press to show a confirmation dialog before logging out.
   Future<bool> onPop(BuildContext context) async {
     // this method return alert box
 
@@ -39,6 +44,7 @@ class HomeScreen extends StatelessWidget {
     return false;
   }
 
+  /// Handles selecting an order and navigating to the OrderView Screen.
   void _selectOrder(BuildContext context, OrderModel? order) {
     //select order and navigate to OrderView Screen
     context
@@ -49,8 +55,9 @@ class HomeScreen extends StatelessWidget {
     context.push(Routes.ORDERVIEW);
   }
 
+  /// Initiates the barcode scanning process.
   Future<void> scanBarcode(BuildContext context) async {
-    // this method sacn qr code
+    // this method scan qr code
     String barcodeScanRes;
 
     try {
@@ -71,6 +78,7 @@ class HomeScreen extends StatelessWidget {
     }
   }
 
+  /// Initiates the process of getting a new order.
   _newOrder(BuildContext context) async {
     // call new order event for picker and checker
     final userBasedOrders = context
@@ -87,6 +95,7 @@ class HomeScreen extends StatelessWidget {
     }
   }
 
+  /// Handles getting a new order for the checker using the scanned barcode.
   void _getNewOrderForChecker(BuildContext context, String orderID) {
     var orderStream;
     context
@@ -104,6 +113,7 @@ class HomeScreen extends StatelessWidget {
     });
   }
 
+  /// Handles getting a new order for the picker based on user settings.
   void _getNewOrderForPicker(BuildContext context) {
     var orderStream;
     context.read<OrderBloc>().add(LoadNewOrderForPickerEvent());
