@@ -14,8 +14,7 @@ class AppVersionWidget extends StatelessWidget {
     return FutureBuilder<Map<String, String>>(
         future: Utilities().getAppInfo(),
         builder: (context, snapshot) {
-          log('---------');
-          log(snapshot.data.toString());
+
           if (snapshot.hasData && snapshot.data != null) {
             return Column(
               children: [
@@ -30,7 +29,7 @@ class AppVersionWidget extends StatelessWidget {
                 ),
                 TextWidget(
                   color: Colors.grey,
-                  data: "${"version".tr()}  : ${snapshot.data!['version']}",
+                  data: "${"version".translate()} : ${snapshot.data!['version']}",
                   fontSize: 12.5,
                   fontWeight: FontWeight.w300,
                   letterSpace: .1,
@@ -38,7 +37,7 @@ class AppVersionWidget extends StatelessWidget {
               ],
             );
           } else {
-            return const CircularProgressWidget();
+            return  CircularProgressWidget();
           }
         });
   }

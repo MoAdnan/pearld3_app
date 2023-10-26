@@ -4,8 +4,10 @@ import 'package:bloc/bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:order_repository/order_repository.dart';
+import 'package:pearld3_authentication/pearld3_authentication.dart';
 import 'package:pearld3_models/pearld3_models.dart';
 import 'package:pearld3_states/pearld3_states.dart';
 import 'package:pearld3_util/pearld3_util.dart';
@@ -18,30 +20,121 @@ class OrderViewBloc extends Bloc<OrderViewEvent, OrderViewState> {
   OrderRepository orderRepository;
   ConfigBloc configBloc;
   LoginBloc loginBloc;
+  SettingsBloc settingsBloc;
 
   /// Creates an instance of [OrderViewBloc] with the required dependencies.
   OrderViewBloc(
       {required this.orderRepository,
       required this.loginBloc,
+      required this.settingsBloc,
       required this.configBloc})
       : super(OrderViewInitial()) {
     // on<ItemPickEvent>((event, emit) => _pickItem(event, emit));
     on<SelectOrderAndLoadItemsEvent>((event, emit) => _loadItems(event, emit));
     on<SaveOrderEvent>((event, emit) => _saveOrder(event, emit));
-    on<UpdateItemEvent>((event, emit) => _pickItem(event, emit));
+    on<UpdateItemEvent>((event, emit) => _updateItem(event, emit));
     on<SearchItemEvent>((event, emit) => _searchItems(event, emit));
     on<ClearOrderViewEvent>((event, emit) => _clearOrderView(event, emit));
+    on<PrintOrderLabelEvent>((event, emit) => _printOrderLabel(event, emit));
+    on<SortItemsEvent>((event, emit) => _sortItemsEvent(event, emit));
+
+
+
   }
+
+
+  _sortItemsEvent(SortItemsEvent event, Emitter emit)async{
+    var currentState = state;
+
+    var items = currentState.searchResults;
+    switch(event.sortBy)
+    {
+      case 'Product': {
+        items.sort((a, b) => a.itemName.compareTo(b.itemName),);
+        emit(OrderViewLoaded(searchResults: [], items: currentState.items, order: currentState.order));
+        emit(OrderViewLoaded(searchResults: items, items: currentState.items, order: currentState.order));
+      }
+      break;
+      case 'Location' : {
+        items.sort((a, b) => a.routeCode.compareTo(b.routeCode),);
+
+        emit(OrderViewLoaded(searchResults: [], items: currentState.items, order: currentState.order));
+
+        emit(OrderViewLoaded(searchResults: items, items: currentState.items, order: currentState.order));
+
+      }
+      break;
+
+    }
+
+
+  }
+
+
+  _printOrderLabel(PrintOrderLabelEvent event, Emitter emit) async {
+    final currentState = state;
+
+    if (currentState is OrderViewLoaded) {
+      final dblInput = DbInputs(
+          reqdate: '2023-08-18T09:57:36.111179',
+          outletUID: loginBloc.state.credential!.userCredential!.outletUID,
+          deviceID: 0,
+          paperWidth: event.context
+              .read<SettingsBloc>()
+              .state
+              .appSettingsModel
+              .paperWidth,
+          pdfMode: false,
+          refUID: currentState.order!.uid,
+          reportKey: 'DSOrders');
+
+      final response = await orderRepository.getPrintData(
+          dbInputs: dblInput,
+          baseUrl: configBloc.state.config!.serviceurl!,
+          token: loginBloc.state.credential!.token!);
+
+      if (response.isNotEmpty) {
+        event.context
+            .read<SettingsBloc>()
+            .add(PrintLabelEvent(data: response, context: event.context));
+      } else {
+        event.context.showErrorSnackBar('empty_label_found'.translate());
+      }
+    }
+  }
+
+  _updateItemsState(UpdateItemEvent event, Emitter emit) async {
+    final currentState = state;
+    if (currentState is OrderViewLoaded) {
+      List<OrderItemModel> items = currentState.items;
+      final item = items.firstWhere((element) => element.uid == event.item.uid);
+      final itemIndex = items.indexOf(event.item);
+
+      items[itemIndex] = event.item.copyWith(status: event.newStatus);
+      final updatedState = currentState.copyWith(items: items);
+      emit(updatedState);
+    }
+  }
+
+
+
+
 
   /// Handles the event to pick an item and updates its status.
   ///
   /// This method is responsible for picking an item, changing its status,
   /// and displaying alerts or messages based on the action performed.
-  void _pickItem(UpdateItemEvent event, Emitter emit) async {
-    print('next Status : ${event.newStatus}');
+  ///
+
+  void _updateItem(UpdateItemEvent event, Emitter emit) async {
+    // print('next Status : ${event.newStatus}');
 
     late Status response;
     final currentState = state;
+    // emit(OrderViewLoading(
+    //     items: state.items,
+    //     searchResults: state.searchResults,
+    //     order: state.order));
     final loginState = loginBloc.state;
     final configState = configBloc.state;
     final dblInputs = DbInputs(
@@ -56,56 +149,22 @@ class OrderViewBloc extends Bloc<OrderViewEvent, OrderViewState> {
     if (loginState is LoggedIn &&
         configState is ConfigLoaded &&
         currentState is OrderViewLoaded) {
-      if (event.newStatus ==
-          loginBloc.state.credential!.userCredential!.deviceSetting!
-              .checkStatusList.last) {
-// item set to no stock
-        event.context.showAlert(
-          title: 'out_stock_alert'.tr(),
-          onCancel: () {
-            event.context.pop();
-          },
-          onConfirm: () async {
-            response = await orderRepository.changeStatus(
-                dbInputs: dblInputs,
-                token: loginState.credental.token!,
-                baseUrl: configState.config!.serviceurl!);
-            add(SelectOrderAndLoadItemsEvent(order: currentState.order));
-            event.context.pop();
-            event.context.pop();
+      // event.rootContext.pop();
+      response = await orderRepository.changeStatus(
+          dbInputs: dblInputs,
+          token: loginState.credental.token!,
+          baseUrl: configState.config!.serviceurl!);
 
-            if (response.code == 200) {
-              try {
-                event.context.showSuccessSnackBar(response.message!);
-              } catch (e) {
-                log('');
-                log('${e} ');
-                log('');
-              }
-            }
-          },
-          confirmText: 'yes'.tr(),
-          cancelText: 'no'.tr(),
-          buttonTextStyle: event.context.buttonTextStyle
-              .copyWith(color: event.context.primaryColor),
-          titleStyle:
-              event.context.titleMedium!.copyWith(fontWeight: FontWeight.bold),
-        );
-      } else {
-        response = await orderRepository.changeStatus(
-            dbInputs: dblInputs,
-            token: loginState.credental.token!,
-            baseUrl: configState.config!.serviceurl!);
+      if (response.code == 200) {
+        add(SelectOrderAndLoadItemsEvent(
+            order: currentState.order!, context: event.rootContext));
 
-        if (response.code == 200) {
-          add(SelectOrderAndLoadItemsEvent(order: currentState.order));
-          try {
-            event.context.showSuccessSnackBar(response.message!);
-          } catch (e) {
-            log('');
-            log('${e} ');
-            log('');
-          }
+        try {
+          // event.context.showSuccessSnackBar(response.message!);
+        } catch (e) {
+          log('');
+          log('${e} ');
+          log('');
         }
       }
     }
@@ -115,29 +174,37 @@ class OrderViewBloc extends Bloc<OrderViewEvent, OrderViewState> {
   ///
   /// This method resets the current state of the order view.
   _clearOrderView(ClearOrderViewEvent event, Emitter emit) {
-    emit(OrderViewInitial());
+    emit(OrderViewEmpty());
   }
+
+
 
   /// Saves the current order.
   ///
   /// This method saves the current order and updates the state accordingly.
   void _saveOrder(SaveOrderEvent event, Emitter emit) async {
     final currentState = state;
-    if (currentState is OrderViewLoaded) {
-      emit(OrderViewLoading());
-      final productCheckStartingStatus = loginBloc.state.credential!
-          .userCredential!.deviceSetting!.productCheckStartingStatus!;
 
-      if (currentState.order.status == productCheckStartingStatus! + 1) {
+    if (currentState is OrderViewLoaded) {
+      emit(OrderViewLoading(
+          searchResults: state.searchResults,
+          items: state.items,
+          order: state.order));
+
+      final ending_status = loginBloc.state.credential!.userCredential!
+          .deviceSetting!.productCheckEndingStatus!;
+      final starting_status = loginBloc.state.credential!.userCredential!
+          .deviceSetting!.productCheckStartingStatus;
+      if (state.order!.status! >= starting_status! &&
+          state.order!.status! < ending_status!) {
         final loginState = loginBloc.state;
         final configState = configBloc.state;
-
         if (loginState is LoggedIn && configState is ConfigLoaded) {
           final dblInputs = DbInputs(
               reqdate: DateTime.now().toString(),
-              outletUID: currentState.order.rightLeafUID,
-              deviceID: productCheckStartingStatus + 1,
-              refUID: currentState.order.ohUID,
+              outletUID: currentState.order!.rightLeafUID,
+              deviceID: ending_status - 1,
+              refUID: currentState.order!.ohUID,
               reportKey: "",
               paperWidth: 0,
               pdfMode: false);
@@ -145,18 +212,30 @@ class OrderViewBloc extends Bloc<OrderViewEvent, OrderViewState> {
               dbInputs: dblInputs,
               baseUrl: configState.config!.serviceurl!,
               token: loginState.credental.token!);
-          orderEither.fold((l) => emit(OrderViewError(status: l)), (r) {
-            emit(OrderSaved(message: r['message'], id: r['uid']));
-            Future.delayed(Duration(seconds: 1)).then((value) {
-              add(SelectOrderAndLoadItemsEvent(order: currentState.order));
-            });
+          orderEither.fold((l) {
+
+            emit(currentState);
+            event.context.showErrorSnackBar(l.message!);
+          }, (r) async {
+            event.context.read<OrderBloc>().add(LoadOrderEvent(dateTime: DateTime.now()));
+            final order = state.order;
+
+
+
+
+
+              add(SelectOrderAndLoadItemsEvent(
+                  order: order!.copyWith(status: event.context.read<LoginBloc>().state.credential!.userCredential!.deviceSetting!.productCheckEndingStatus), context: event.context));
+
+
           });
         }
       } else {
         emit(OrderViewError(
-            status: Status(message: 'Already saved'.tr(), code: 32)));
+            status: Status(message: 'Already saved'.translate(), code: 32)));
         Future.delayed(Duration(seconds: 1)).then((value) {
-          add(SelectOrderAndLoadItemsEvent(order: currentState.order));
+          add(SelectOrderAndLoadItemsEvent(
+              order: currentState.order!, context: event.context));
         });
       }
     }
@@ -190,7 +269,15 @@ class OrderViewBloc extends Bloc<OrderViewEvent, OrderViewState> {
   /// This method loads items for the selected order and updates the state
   /// with the loaded items and search results.
   void _loadItems(SelectOrderAndLoadItemsEvent event, Emitter emit) async {
-    // emit(OrderViewLoading());
+    // add(ClearOrderViewEvent());
+    final currentState = state;
+
+    if (currentState is OrderViewInitial || currentState is OrderViewEmpty) {
+      emit(OrderViewLoading(
+          items: state.items,
+          searchResults: state.searchResults,
+          order: state.order));
+    }
     final loginState = loginBloc.state;
     final configState = configBloc.state;
 
@@ -210,46 +297,24 @@ class OrderViewBloc extends Bloc<OrderViewEvent, OrderViewState> {
           baseUrl: configState.config!.serviceurl!);
 
       response.fold((l) => emit(OrderViewError(status: l)), (r) {
+        List<OrderItemModel> items = r;
+        items.sort((a, b) => a.routeCode.compareTo(b.routeCode),);
         if (r.isNotEmpty) {
-          emit(OrderViewLoaded(items: r, order: event.order, searchResults: r));
+          emit(OrderViewLoaded(items: items, order: event.order, searchResults: items));
+          event.context.push(Routes.ORDERVIEW);
+          // if (currentState is OrderViewInitial ||
+          //     currentState is OrderViewEmpty) {
+          //   event.context.push(Routes.ORDERVIEW);
+          // }
         } else {
+          event.context.showErrorSnackBar('No items found in this order');
           emit(OrderViewEmpty());
         }
       });
     }
 
-    // if (loginState is LoggedIn && configState is ConfigLoaded) {
-    //   final dblInputs = DbInputs(
-    //       reqdate: "2023-07-19 10:51:22.042853",
-    //       outletUID: event.order.rightLeafUID,
-    //       deviceID: 30,
-    //       refUID: event.order.uid,
-    //       reportKey: "",
-    //       paperWidth: 0,
-    //       pdfMode: false);
-    //   final response = await orderRepository.getItems(
-    //       dbInputs: dblInputs,
-    //       token: loginState.credental.token!,
-    //       baseUrl: configState.config.serviceurl!);
-    //   response.fold((l) => emit(ItemError(status: l)), (r) {
-    //     if (r.isNotEmpty) {
-    //       emit(ItemLoaded(items: r));
-    //     } else {
-    //       emit(ItemEmpty());
-    //     }
-    //   });
-    // }
+
   }
 
-  // void _pickItem(ItemPickEvent event, Emitter<ItemState> emit) {
-  //
-  //
-  //   if (!state.pickedItems.contains(event.item)) {
-  //     final data = [...state.pickedItems, ...[event.item]];
-  //     emit(state.copyWith(pickedItems: data));
-  //   } else {
-  //     emit(state.copyWith(pickedItems: [...state.pickedItems]..remove(event.item)));
-  //   }
-  //   print("$state  pickedItem State");
-  // }
+
 }

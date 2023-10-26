@@ -44,7 +44,7 @@ class CustomSearchBar extends StatelessWidget {
             textAlign: TextAlign.start,
             style: TextStyle(color: Theme.of(context).hintColor, fontSize: 18),
             decoration: InputDecoration(
-              hintText: '${'search_here'.tr()}...',
+              hintText: '${'search_here'.translate()}...',
 
               contentPadding: context.locale.languageCode == 'en'
                   ? const EdgeInsets.only(left: 60, top: 10, bottom: 10)

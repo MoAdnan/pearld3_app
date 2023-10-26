@@ -25,6 +25,7 @@ class CustomDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButton<String>(
+
       value: initialValue,
       icon: const Icon(Icons.arrow_drop_down),
       elevation: 17,
@@ -38,14 +39,18 @@ class CustomDropdown extends StatelessWidget {
       onChanged: onChanged,
       items: items.map<DropdownMenuItem<String>>((String? value) {
         return DropdownMenuItem<String>(
+
           value: value,
-          child: Text(
-            value!,
-            style: TextStyle(
-              color: textColor,
-              fontSize: fontSize,
-              fontWeight: fontWeight,
-              letterSpacing: letterSpacing,
+          child: FittedBox(
+            fit: BoxFit.fitWidth,
+            child: Text(
+              value!,
+              style: TextStyle(
+                color: textColor,
+                fontSize: fontSize,
+                fontWeight: fontWeight,
+                letterSpacing: letterSpacing,
+              ),
             ),
           ),
         );

@@ -1,7 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:pearld3_authentication/pearld3_authentication.dart';
+import 'package:pearld3_util/pearld3_util.dart';
 import 'text_field_widget.dart';
-import '../login_screen/model/password.dart';
 
 class PasswordField extends StatelessWidget {
   TextEditingController? controller;
@@ -37,7 +38,7 @@ class PasswordField extends StatelessWidget {
         return null;
       },
       controller: controller ?? TextEditingController(),
-      hintText: 'password'.tr(),
+      hintText: 'password'.translate(),
       prefixIcon: Icons.password,
     );
   }

@@ -29,15 +29,22 @@ class HttpAssetLoader extends AssetLoader {
   ///   // Handle no translations found
   /// }
   /// ` @override
+  @override
   Future<Map<String, dynamic>?> load(String path, Locale locale) async {
+
+
     // Retrieve available languages from the repository
-    final availableLanguages = await LanguageRepository().getLanguages();
+    final availableLanguages = await  LanguageRepository().getLanguages();
+
     // Find the language that matches the given locale's language code
     final language = availableLanguages
-        ?.firstWhere((element) => element.languageCode == locale.languageCode);
+        .firstWhere((element) => element.languageCode == locale.languageCode);
     // Fetch translations based on the resolved language name
     final trans =
-        await LanguageRepository().getLanguageByName(language?.language);
+        await LanguageRepository().getLanguageByName(language.language);
+
+
+
 
     return trans;
   }

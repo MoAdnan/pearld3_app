@@ -51,7 +51,7 @@ class SearchOrderEvent extends OrderEvent {
 }
 
 class LoadingTestEvent extends OrderEvent {}
-
+class ClearOrderEvent extends OrderEvent {}
 /// Event to select a specific order.
 class SelectOrderEvent extends OrderEvent {
   OrderModel order;

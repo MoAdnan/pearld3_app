@@ -2,17 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:pearld3_util/utilites/context_extensions.dart';
 
 class CircularProgressWidget extends StatelessWidget {
-  const CircularProgressWidget({super.key});
+   CircularProgressWidget({super.key,this.width =30 ,this.height = 30,this.color = const Color(0xff071d40)});
+ Color color;
+ final double height;
+   final double width;
 
-  @override
+   @override
   Widget build(BuildContext context) {
     return Center(
       child: SizedBox(
-        height: 30,
-        width: 30,
+        height: height,
+        width: width,
         child: CircularProgressIndicator(
           color: context.colorWhite,
-          backgroundColor: context.primaryColor,
+          backgroundColor: color ,
         ),
       ),
     );

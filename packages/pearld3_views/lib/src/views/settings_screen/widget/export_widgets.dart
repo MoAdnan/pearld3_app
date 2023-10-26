@@ -1,5 +1,4 @@
 export 'app_version_widget.dart';
-export 'bluetooth_status.dart';
 export 'custom_dropdown_widget.dart';
 export 'dialog_outlined_button.dart';
 export 'divider_widget.dart';

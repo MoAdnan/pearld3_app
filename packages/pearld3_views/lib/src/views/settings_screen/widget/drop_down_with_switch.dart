@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:pearld3_util/pearld3_util.dart';
 import '../../../../pearld3_views.dart';
@@ -24,6 +26,9 @@ class DropDownWithSwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+final deviceWidth = MediaQuery.of(context).size.width;
+final deviceHeight = MediaQuery.of(context).size.height;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -31,7 +36,8 @@ class DropDownWithSwitch extends StatelessWidget {
           textName,
           style: TextStyle(
               color: context.colorBlack,
-              fontSize: 17,
+              fontSize: deviceWidth < 380.12 ? 13 : 17,
+              // fontSize: 17 ,
               fontWeight: FontWeight.w400,
               letterSpacing: .1),
         ),
@@ -41,7 +47,8 @@ class DropDownWithSwitch extends StatelessWidget {
           items: dropDownList,
           dropdownColor: Colors.white,
           textColor: Colors.deepPurple,
-          fontSize: 17,
+          fontSize:deviceWidth < 380.12 ? 13: 17,
+          // fontSize: 17 ,
           fontWeight: FontWeight.w400,
           letterSpacing: 0.1,
         ),

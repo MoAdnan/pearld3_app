@@ -2,6 +2,7 @@ import 'package:authentication_repository/authentication_repository.dart';
 import 'package:get_it/get_it.dart';
 import 'package:language_repository/language_repository.dart';
 import 'package:order_repository/order_repository.dart';
+import 'package:pearld3_authentication/pearld3_authentication.dart';
 import 'package:pearld3_states/pearld3_states.dart';
 export 'package:get_it/get_it.dart';
 
@@ -22,7 +23,7 @@ Future init() async {
   // Register the LoginBloc as a lazy singleton, using the AuthenticationRepository and ConfigBloc dependencies.
   getItInstance.registerLazySingleton<LoginBloc>(() => LoginBloc(
       authenticationRepository: getItInstance(),
-      configBloc: getItInstance<ConfigBloc>()));
+      ));
   getItInstance.registerLazySingleton<OrderRepository>(() => OrderRepository());
   // Register the OrderRepository as a lazy singleton.
   // Register the OrderBloc as a factory, using the ConfigBloc, LoginBloc, and OrderRepository dependencies.
@@ -30,14 +31,17 @@ Future init() async {
       configBloc: getItInstance<ConfigBloc>(),
       loginBloc: getItInstance<LoginBloc>(),
       orderRepository: getItInstance<OrderRepository>()));
+
+  getItInstance.registerFactory(() => SettingsBloc(
+    authenticationRepository: getItInstance<AuthenticationRepository>(),
+      loginBloc: getItInstance<LoginBloc>(),
+
+      configBloc: getItInstance<ConfigBloc>()));
   // Register the OrderViewBloc as a factory, using the OrderRepository, LoginBloc, and ConfigBloc dependencies.
   getItInstance.registerFactory(() => OrderViewBloc(
+    settingsBloc: getItInstance<SettingsBloc>(),
       orderRepository: getItInstance<OrderRepository>(),
       loginBloc: getItInstance<LoginBloc>(),
       configBloc: getItInstance<ConfigBloc>()));
-  getItInstance.registerFactory(() => SettingsBloc(
-    loginBloc: getItInstance<LoginBloc>(),
-      orderRepository: getItInstance<OrderRepository>(),
-      orderViewBloc: getItInstance<OrderViewBloc>(),
-      configBloc: getItInstance<ConfigBloc>()));
+
 }

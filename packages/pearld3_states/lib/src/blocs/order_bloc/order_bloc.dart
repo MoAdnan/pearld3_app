@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:order_repository/order_repository.dart';
+import 'package:pearld3_authentication/pearld3_authentication.dart';
 import 'package:pearld3_models/pearld3_models.dart';
 import 'package:pearld3_states/di.dart';
 import '../../../pearld3_states.dart';
@@ -29,6 +30,12 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     on<LoadNewOrderForPickerEvent>(_loadNewOrderForPicker);
     on<LoadNewOrderForCheckerEvent>(_loadNewOrderForChecker);
     on<SearchOrderEvent>((event, emit) => _searchOrder(event, emit));
+    on<ClearOrderEvent>((event, emit) => _clearOrder(event, emit));
+  }
+
+  _clearOrder(ClearOrderEvent event, Emitter emit){
+  emit(OrderLoaded(orders: [], searchResult: []));
+    emit(OrderInitial());
   }
 
   /// Handles the [SearchOrderEvent] by filtering orders based on a keyword.
@@ -91,6 +98,8 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
               orders: currentState.orders,
               searchResult: currentState.searchResult)), (r) {
         if (r.isNotEmpty) {
+          List<OrderModel> orders = r;
+          orders.sort((a, b) => a.status!.compareTo(b.status!),);
           emit(OrderLoaded(
             orders: r,
             searchResult: r,
@@ -149,6 +158,8 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
           dbInputs: dblInputs,
           baseUrl: configState.config!.serviceurl!,
           token: loginState.credental.token!);
+
+
       orderEither.fold((l) {
         emit(OrderError(
             error: l,
@@ -158,6 +169,10 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         add(SelectOrderEvent(order: r));
         add(LoadOrderEvent(dateTime: DateTime.now()));
       });
+
+
+
+
     }
   }
 
@@ -185,7 +200,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       //   emit(OrderLoading(searchResult: [],orders: []));
       // }
 
-      print('dbl id : ${event.orderId}');
+      // print('dbl id : ${event.orderId}');
 
       dblInputs = DbInputs(
           reqdate: "2023-07-19 10:51:22.042853",
@@ -210,6 +225,9 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         add(SelectOrderEvent(order: r));
         add(LoadOrderEvent(dateTime: DateTime.now()));
       });
+
+
+
     }
   }
 }

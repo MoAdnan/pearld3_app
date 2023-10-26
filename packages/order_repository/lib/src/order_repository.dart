@@ -41,6 +41,7 @@ class OrderRepository {
       {required DbInputs dbInputs,
       required String token,
       required String baseUrl}) async {
+
     _orderService = OrderService(baseUrl: baseUrl, token: token);
     final response =
         await _orderService.getNewOrderForPicker(body: dbInputs.toMap());
@@ -54,7 +55,7 @@ class OrderRepository {
   }
 
 
-  Future<Either<Status, List<dynamic>>> getPrintData(
+  Future<List<dynamic>> getPrintData(
       {required DbInputs dbInputs,
         required String token,
         required String baseUrl}) async {
@@ -62,11 +63,11 @@ class OrderRepository {
     final response =
     await _orderService.getPrintImage(body: dbInputs.toMap());
     return response.fold((l) {
-      return Left(Status.fromJson(l));
+      return [];
     }, (r) {
 
 
-      return Right((r['data']! as List<dynamic>));
+      return (r['data']! as List<dynamic>);
     });
   }
 
@@ -179,19 +180,23 @@ class OrderRepository {
   /// Fetches images associated with the provided [itemUid] from the [_orderService]
   /// using the provided [token] and [baseUrl]. If no images are found, a default image
   /// is returned. Returns a [Future] containing [AttachmentData].
+Future<AttachmentData> getDefaultImage() async{
+  final byteData = await rootBundle.load('assets/images/emptyImage.png');
+  List<int> imageBytes = byteData.buffer.asUint8List();
+  String base64String = base64Encode(imageBytes);
 
+  final emptyImage =
+  AttachmentData(page: 0, data: base64String, isDefault: true);
+  return emptyImage;
+}
   Future<AttachmentData> getImages(
       {required String itemUid,
       required String token,
       required String baseUrl}) async {
     _orderService = OrderService(baseUrl: baseUrl, token: token);
     final response = await _orderService.getItemImages(itemUid: itemUid);
-    final byteData = await rootBundle.load('assets/images/emptyImage.png');
-    List<int> imageBytes = byteData.buffer.asUint8List();
-    String base64String = base64Encode(imageBytes);
+  final emptyImage = await getDefaultImage();
 
-    final emptyImage =
-        AttachmentData(page: 0, data: base64String, isDefault: true);
 
     return response.fold((l) => emptyImage, (r) {
       if (r.isNotEmpty) {
@@ -200,5 +205,9 @@ class OrderRepository {
         return emptyImage;
       }
     });
+
+
+
+
   }
 }

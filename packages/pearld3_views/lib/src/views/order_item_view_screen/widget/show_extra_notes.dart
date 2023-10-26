@@ -6,8 +6,8 @@ import 'package:pearld3_views/pearld3_views.dart';
 /// Widget that displays extra notes related to out of stock items.
 class ShowExtraNotesWidget extends StatelessWidget {
   String? hintText;
-
-  ShowExtraNotesWidget({super.key, required this.hintText});
+  double count;
+  ShowExtraNotesWidget({super.key, required this.hintText,required this.count});
 
   @override
   Widget build(BuildContext context) {
@@ -25,20 +25,21 @@ class ShowExtraNotesWidget extends StatelessWidget {
             //out_stock_b = " Only " ,
             //out_stock_c = "Left in Stock"
             Text(
-              "out_stock_a".tr(),
+        count==0 ?  "out_stock_a".translate() : 'limited'.translate(),
               style: context.bodyLarge!
                   .copyWith(color: context.colorGrey, fontSize: 18),
             ),
 
             RichText(
                 text: TextSpan(
-                    text: 'out_stock_b'.tr(),
+                    text: 'out_stock_b'.translate(),
                     children: [
                       TextSpan(
                           text: '\t${hintText!}\t',
                           style: context.titleMedium1),
                       TextSpan(
-                          text: 'out_stock_c'.tr(), style: context.hintLarge)
+                          text: 'out_stock_c'.translate(),
+                          style: context.hintLarge)
                     ],
                     style: context.hintLarge)),
           ],

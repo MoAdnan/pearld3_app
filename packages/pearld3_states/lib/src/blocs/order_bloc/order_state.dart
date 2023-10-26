@@ -11,14 +11,14 @@ class OrderState extends Equatable {
   /// Returns the count of picked orders.
   int get pickedOrdersCount {
     final pickedOrders =
-    orders.where((element) => element.status == getItInstance<LoginBloc>().state.credential!.userCredential!.deviceSetting!.productCheckEndingStatus).toList();
+    orders.where((element) => element.status! >= getItInstance<LoginBloc>().state.credential!.userCredential!.deviceSetting!.productCheckEndingStatus!.toInt()).toList();
     return pickedOrders.length;
   }
 
   /// Returns the net weight of picked orders.
   double get netWeight {
     final pickedOrders =
-    orders.where((element) => element.status == getItInstance<LoginBloc>().state.credential!.userCredential!.deviceSetting!.productCheckEndingStatus).toList();
+    orders.where((element) => element.status! >=  getItInstance<LoginBloc>().state.credential!.userCredential!.deviceSetting!.productCheckEndingStatus!.toInt()).toList();
     double netWeight = pickedOrders.fold(
         0, (previous, current) => previous + current.weight!.toDouble());
     return netWeight;

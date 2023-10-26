@@ -17,4 +17,4 @@ export 'settings_button.dart';
 export 'icon_button_widget.dart';
 export 'save_button.dart';
 export 'empty_screen.dart';
-export 'product_bottom_sheet.dart';
+export '../order_item_view_screen/widget/product_bottom_sheet.dart';

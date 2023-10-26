@@ -2,14 +2,29 @@ part of 'order_view_bloc.dart';
 
 /// Represents the base class for order view states.
 abstract class OrderViewState extends Equatable {
-  const OrderViewState();
+  List<OrderItemModel> items;
+  OrderModel? order;
+  List<OrderItemModel> searchResults;
+
+
+
+
+
+  OrderViewState({
+    required this.items,
+    required this.order,
+    required this.searchResults,
+  });
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [items,order,searchResults];
 }
 
 /// Represents the initial state of the order view.
-class OrderViewInitial extends OrderViewState {}
+class OrderViewInitial extends OrderViewState {
+
+  OrderViewInitial():super(items: [],order: null,searchResults: []);
+}
 
 /// Represents the state indicating that an order has been successfully saved.
 class OrderSaved extends OrderViewState {
@@ -22,16 +37,16 @@ class OrderSaved extends OrderViewState {
   OrderSaved({
     required this.id,
     required this.message,
-  });
+  }):super(items: [],order: null,searchResults: []);
 
   @override
-  List<Object> get props => [message, id];
+  List<Object?> get props => [message, id];
 }
 
 /// Represents the state indicating that an order and its associated items are loaded.
 class OrderViewLoaded extends OrderViewState {
   List<OrderItemModel> items;
-  OrderModel order;
+  OrderModel? order;
   List<OrderItemModel> searchResults;
 
   /// Creates an [OrderViewLoaded] instance with the loaded items, order, and search results.
@@ -41,7 +56,7 @@ class OrderViewLoaded extends OrderViewState {
     required this.searchResults,
     required this.items,
     required this.order,
-  });
+  }):super(items: items,order: order,searchResults: searchResults);
 // picked items
   /// Returns a list of items that have been picked for the picker.
   List<OrderItemModel> get pickedItemsForPicker {
@@ -79,7 +94,7 @@ class OrderViewLoaded extends OrderViewState {
   }
 
   @override
-  List<Object> get props => [items, order, searchResults];
+  List<Object?> get props => [items, order, searchResults];
 
   /// Creates a copy of this state with optional changes.
   OrderViewLoaded copyWith({
@@ -97,15 +112,31 @@ class OrderViewLoaded extends OrderViewState {
 
 /// Represents the state indicating that the order view is empty.
 class OrderViewEmpty extends OrderViewState {
+
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
+
+  OrderViewEmpty():super(searchResults: [],order: null,items: []);
 }
 
 /// Represents the state indicating that the order view is currently loading.
-class OrderViewLoading extends OrderViewState {}
+class OrderViewLoading extends OrderViewState {
+  List<OrderItemModel> items;
+  OrderModel? order;
+  List<OrderItemModel> searchResults;
+
+  OrderViewLoading({
+    required this.items,
+    this.order,
+    required this.searchResults,
+  }):super(items: items,order: order,searchResults: searchResults);
+
+
+}
 
 /// Represents the state indicating an error in the order view.
 class OrderViewError extends OrderViewState {
+
   Status status;
 
   /// Creates an [OrderViewError] instance with the provided [status].
@@ -113,5 +144,5 @@ class OrderViewError extends OrderViewState {
   /// This state is triggered when an error occurs in the order view.
   OrderViewError({
     required this.status,
-  });
+  }):super(items: [],order: null,searchResults: []);
 }

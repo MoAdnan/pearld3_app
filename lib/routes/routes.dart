@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pearld3_authentication/pearld3_authentication.dart';
 import 'package:pearld3_states/pearld3_states.dart';
 import 'package:pearld3_views/pearld3_views.dart';
 
@@ -44,6 +45,7 @@ class AppRoutes {
           path: Routes.ROOT,
           redirect: (context, state) {
             // it check the app is configured or not
+
             if (context.read<ConfigBloc>().state is ConfigLoaded) {
               return Routes.LOGIN;
             }
@@ -52,15 +54,10 @@ class AppRoutes {
           pageBuilder: (context, state) => fadeRouteTransition(
               context: context, state: state, child: const ConfigureScreen()),
         ),
-        // GoRoute(
-        //   path: Routes.CONFIG,
-        //   builder: (context, state) => ConfigureScreen(),
-        //   pageBuilder: (context, state) => fadeRouteTransition(
-        //       context: context, state: state, child: ConfigureScreen()),
-        // ),
         GoRoute(
           // redirect: _initialRedirect,
           path: Routes.SETTINGS,
+
           builder: (context, state) => SettingsScreen(),
           pageBuilder: (context, state) => fadeRouteTransition(
               context: context, state: state, child: SettingsScreen()),
@@ -68,14 +65,33 @@ class AppRoutes {
         GoRoute(
           path: Routes.HOME,
           builder: (context, state) => HomeScreen(),
-          pageBuilder: (context, state) => fadeRouteTransition(
-              context: context, state: state, child: HomeScreen()),
+          redirect: (context, state) {
+            context
+                .read<OrderBloc>()
+                .add(ClearOrderEvent());
+            context
+                .read<OrderBloc>()
+                .add(LoadOrderEvent(dateTime: DateTime.now()));
+          },
+          pageBuilder: (context, state) {
+          return  fadeRouteTransition(
+                context: context, state: state, child: HomeScreen());
+          },
         ),
         GoRoute(
           path: Routes.LOGIN,
+          redirect: (context, state) {
+            context.read<SettingsBloc>().add(ReloadLocationEvent(context: context));
+          },
           builder: (context, state) => LoginScreen(),
           pageBuilder: (context, state) => fadeRouteTransition(
               context: context, state: state, child: LoginScreen()),
+        ),
+        GoRoute(
+          path: Routes.QRLOGIN,
+          builder: (context, state) => QrLoginScreen(qrData: state.extra.toString()),
+          pageBuilder: (context, state) => fadeRouteTransition(
+              context: context, state: state, child: QrLoginScreen(qrData: state.extra.toString(),)),
         ),
         GoRoute(
           path: Routes.ORDERVIEW,

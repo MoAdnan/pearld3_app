@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:pearld3_util/pearld3_util.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 part 'qr_scan_state.dart';
@@ -62,7 +63,7 @@ class QrScanCubit extends Cubit<QrScanState> {
   void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
     if (!p) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('no_permission'.tr())),
+        SnackBar(content: Text('no_permission'.translate())),
       );
     }
   }

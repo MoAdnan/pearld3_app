@@ -27,7 +27,7 @@ class OrderListWidget extends StatelessWidget {
             ),
           );
         } else if (state is OrderLoading) {
-          return const CircularProgressWidget();
+          return  CircularProgressWidget();
         } else if (state is OrderError) {
           return Center(
             child: Text(state.error.message!),

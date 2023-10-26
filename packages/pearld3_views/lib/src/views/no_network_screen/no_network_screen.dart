@@ -9,6 +9,7 @@ class NoNetworkScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -22,20 +23,20 @@ class NoNetworkScreen extends StatelessWidget {
               ),
               kHeight24,
               Text(
-                'no_network_title'.tr(),
+                'no_network_title'.translate(),
                 style: context.bodyLarge!
                     .copyWith(color: context.errorColor, fontSize: 17),
               ),
               kHeight12,
               Text(
-                'no_network_text'.tr(),
+                'no_network_text'.translate(),
                 style: context.bodySmall!.copyWith(fontSize: 14),
               ),
               kHeight24,
               ButtonWidget(
                 height: 50,
                 width: 220,
-                buttonText: 'retry'.tr(),
+                buttonText: 'retry'.translate(),
                 onTap: () {},
               )
             ],

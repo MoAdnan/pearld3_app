@@ -5,13 +5,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pearld3_authentication/pearld3_authentication.dart';
 import 'package:pearld3_models/pearld3_models.dart';
 import 'package:pearld3_states/pearld3_states.dart';
 import 'package:pearld3_util/pearld3_util.dart';
 import 'package:pearld3_views/pearld3_views.dart';
 import 'package:pearld3_views/src/views/home_screen/widgets/app_bar.dart';
 import 'package:pearld3_views/src/views/home_screen/widgets/bottom_appbar.dart';
+import 'package:pearld3_views/src/views/home_screen/widgets/order_shimmer_tile.dart';
 import 'package:pearld3_views/src/views/home_screen/widgets/order_tile.dart';
+import 'package:shimmer/shimmer.dart';
 import '../widget/circular_progress.dart';
 import '../widget/logout_button.dart';
 
@@ -30,11 +33,12 @@ class HomeScreen extends StatelessWidget {
     // this method return alert box
 
     context.showAlert(
-      cancelText: 'no'.tr(),
-      confirmText: 'yes'.tr(),
-      title: 'logout_warning'.tr(),
+      cancelText: 'no'.translate(),
+      confirmText: 'yes'.translate(),
+      title: 'logout_warning'.translate(),
       onCancel: () => context.pop(),
       onConfirm: () {
+        context.read<OrderBloc>().add(ClearOrderEvent());
         context.read<LoginBloc>().add(LogOut(context));
       },
       buttonTextStyle:
@@ -47,12 +51,11 @@ class HomeScreen extends StatelessWidget {
   /// Handles selecting an order and navigating to the OrderView Screen.
   void _selectOrder(BuildContext context, OrderModel? order) {
     //select order and navigate to OrderView Screen
+    context.read<OrderViewBloc>().add(ClearOrderViewEvent());
     context
         .read<OrderViewBloc>()
-        .add(SelectOrderAndLoadItemsEvent(order: order!));
+        .add(SelectOrderAndLoadItemsEvent(order: order!, context: context));
     FocusScope.of(context).requestFocus(FocusNode());
-
-    context.push(Routes.ORDERVIEW);
   }
 
   /// Initiates the barcode scanning process.
@@ -80,7 +83,7 @@ class HomeScreen extends StatelessWidget {
 
   /// Initiates the process of getting a new order.
   _newOrder(BuildContext context) async {
-    // call new order event for picker and checker
+    // call new order event for picker and checker and dispatcher
     final userBasedOrders = context
         .read<LoginBloc>()
         .state
@@ -88,11 +91,13 @@ class HomeScreen extends StatelessWidget {
         .userCredential!
         .deviceSetting!
         .userBasedOrders;
+
     if (userBasedOrders!) {
       _getNewOrderForPicker(context);
     } else {
       scanBarcode(context);
     }
+
   }
 
   /// Handles getting a new order for the checker using the scanned barcode.
@@ -136,10 +141,9 @@ class HomeScreen extends StatelessWidget {
       onWillPop: () => onPop(context),
       child: Scaffold(
         // backgroundColor: Colors.white,
-        appBar: CustomAppBar(
+        appBar: CustomAppBar1(
             searchBar: CustomSearchBar(
               onClear: () {
-                context.pop();
                 context
                     .read<OrderBloc>()
                     .add(LoadOrderEvent(dateTime: _selectedDate.value));
@@ -176,47 +180,85 @@ class HomeScreen extends StatelessWidget {
               ),
               kWidth8
             ]),
-        body: BlocBuilder<OrderBloc, OrderState>(
-          builder: (context, state) {
-            return AbsorbPointer(
-              absorbing: state is OrderLoading,
-              child: ListView.builder(
-                itemCount: state.searchResult.length,
-                itemBuilder: (context, index) {
-                  return OrderTile(
-                    index: index,
-                    order: state.searchResult[index],
-                    onTap: () {
-                      SystemChannels.textInput.invokeMethod('TextInput.hide');
-                      _selectOrder(context, state.searchResult[index]);
+        body: Column(children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(color: Colors.white,
+            child: ValueListenableBuilder(
+              valueListenable: _selectedDate,
+              builder: (context,selectedDate,_) {
+                DateFormat.yMd().add_jm();
+                DateFormat dateFormat = DateFormat('dd-MM-yyyy');
+                final date = DateTime.parse(selectedDate.toString());
+               final formattedDate = dateFormat.format(date);
+                return
+                    Text("${'showing_dated'.translate()} ${formattedDate.toString()}", style: context.highlightSmall!
+                        .copyWith(fontSize: 17, fontWeight: FontWeight.w400,color: context.colorGrey));
+
+
+              }
+            ),),
+          ),
+          BlocBuilder<OrderViewBloc,OrderViewState>(builder: (context, orderViewState) {
+            return BlocBuilder<OrderBloc, OrderState>(
+              builder: (context, state) {
+                return Expanded(
+                  child: ListView.builder(
+                    itemCount: state.searchResult.length,
+                    itemBuilder: (context, index) {
+                      if(orderViewState is OrderViewLoading || state is OrderLoading){
+                        return ShimmerOrderTile(
+                          index: index,
+                          order: state.searchResult[index],
+
+                        );
+                      }
+                      else
+                      {
+                        return OrderTile(
+                          index: index,
+                          order: state.searchResult[index],
+                          onTap: () {
+                            SystemChannels.textInput.invokeMethod('TextInput.hide');
+                            _selectOrder(context, state.searchResult[index]);
+                          },
+                        );
+                      }
+
                     },
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             );
-          },
-        ),
+          },),
+
+        ],),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: const CustomBottomAppBar(),
-        floatingActionButton: BlocBuilder<OrderBloc, OrderState>(
-          builder: (context, state) {
-            log(state.toString());
-            if (state is OrderLoading) {
-              return FloatingActionButton(
-                backgroundColor: context.colorWhite,
-                onPressed: null,
-                child: const CircularProgressWidget(),
-              );
-            } else {
-              return FloatingActionButton(
-                backgroundColor: context.primaryColor,
-                onPressed: () => _newOrder(context),
-                child: const Icon(
-                  Icons.add_shopping_cart,
-                  color: Colors.white,
-                ),
-              );
-            }
+        floatingActionButton: BlocBuilder<OrderViewBloc, OrderViewState>(
+          builder: (context, orderViewState) {
+            return BlocBuilder<OrderBloc, OrderState>(
+              builder: (context, orderState) {
+
+                if (orderState is OrderLoading ||
+                    orderViewState is OrderViewLoading) {
+                  return FloatingActionButton(
+                    backgroundColor: context.colorWhite,
+                    onPressed: null,
+                    child:  CircularProgressWidget(),
+                  );
+                } else {
+                  return FloatingActionButton(
+                    backgroundColor: context.primaryColor,
+                    onPressed: () => _newOrder(context),
+                    child: const Icon(
+                      Icons.add_shopping_cart,
+                      color: Colors.white,
+                    ),
+                  );
+                }
+              },
+            );
           },
         ),
       ),

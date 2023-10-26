@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pearld3_authentication/pearld3_authentication.dart';
 import 'package:pearld3_states/blocs.dart';
 import 'package:pearld3_util/pearld3_util.dart';
 import 'package:pearld3_views/src/constants/app_spaces.dart';
@@ -24,7 +25,7 @@ class SelectPrinter extends StatelessWidget {
                 Text(
                   state.appSettingsModel.blueDevice != null
                       ? state.appSettingsModel.blueDevice!.name!
-                      : 'not_selected'.tr(),
+                      : 'not_selected'.translate(),
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: context.colorBlack,

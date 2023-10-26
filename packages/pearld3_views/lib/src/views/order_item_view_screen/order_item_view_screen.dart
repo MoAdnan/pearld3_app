@@ -1,10 +1,10 @@
 import 'dart:core';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pearld3_authentication/pearld3_authentication.dart';
 import 'package:pearld3_models/pearld3_models.dart';
 import 'package:pearld3_states/pearld3_states.dart';
 import 'package:pearld3_util/utilites/context_extensions.dart';
@@ -13,7 +13,10 @@ import 'package:pearld3_views/src/views/home_screen/widgets/app_bar.dart';
 import 'package:pearld3_views/src/views/order_item_view_screen/view.dart';
 import 'package:pearld3_views/src/views/order_item_view_screen/widget/doc_number_section.dart';
 import 'package:pearld3_views/src/views/order_item_view_screen/widget/header_text_container.dart';
+import 'package:pearld3_views/src/views/order_item_view_screen/widget/print_button.dart';
 import 'package:pearld3_views/src/views/widget/circular_progress.dart';
+
+import '../widget/appbar_container.dart';
 
 /// Screen that displays details of an order item.
 class OrderItemViewScreen extends StatelessWidget {
@@ -26,33 +29,104 @@ class OrderItemViewScreen extends StatelessWidget {
   late String scannedBarcode;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  /// Saves the order if the checkbox is checked.
-  void _saveOrder(BuildContext context) {
-    if (isChecked.value) {
-      context.showAlert(
-          title: 'save_order'.tr(),
-          confirmText: 'yes'.tr(),
-          cancelText: 'no'.tr(),
-          onConfirm: () {
-            context.read<OrderViewBloc>().add(SaveOrderEvent());
-            context.pop();
-          },
-          onCancel: () {
-            context.pop();
-          },
-        buttonTextStyle:
-        context.buttonTextStyle.copyWith(color: context.primaryColor),
-        titleStyle: context.titleMedium!.copyWith(fontWeight: FontWeight.bold),);
+  _switchConfirmValue(
+      {required BuildContext context,
+      required OrderViewState state,
+      required bool value}) {
+    final checkStatusList = context
+        .read<LoginBloc>()
+        .state
+        .credential!
+        .userCredential!
+        .deviceSetting!
+        .checkStatusList;
+    final ending_status = context
+        .read<LoginBloc>()
+        .state
+        .credential!
+        .userCredential!
+        .deviceSetting!
+        .productCheckEndingStatus;
+    final starting_status = context
+        .read<LoginBloc>()
+        .state
+        .credential!
+        .userCredential!
+        .deviceSetting!
+        .productCheckStartingStatus;
+
+
+
+
+    final readOnly =
+        context.read<ConfigBloc>().state.config!.pearlSettings!.function10005;
+
+    final pickedItems  = state.items.where((element) => element.status==checkStatusList[1]||element.status==checkStatusList[2]).toList();
+
+
+
+    if (state.order!.status! >= starting_status! &&
+        state.order!.status! < ending_status!) {
+      if (pickedItems.length==state.items.length) {
+        isChecked.value = value;
+      } else {
+        context.showWarningSnackBar(
+            '${state.items.length-pickedItems.length} ${"items_remaining".translate()}');
+      }
     } else {
-      context.showWarningSnackBar('picked_alert'.tr());
+      context.showWarningSnackBar('saved_order'.translate());
+    }
+
+
+
+
+
+  }
+
+  ValueNotifier<String> sort = ValueNotifier('Location');
+
+  final sorting_elements = ['Location','Product'];
+
+  /// Saves the order if the checkbox is checked.
+  void _saveOrder(BuildContext context) async {
+    final orderViewState = context.read<OrderViewBloc>().state;
+    if (orderViewState is! OrderViewLoaded) {
+      context.showWarningSnackBar('order is on progress, please wait..');
+      return;
+    }
+    if (isChecked.value) {
+      final bool? isConfirmed = await context.showAlert(
+        title: 'save_order'.translate(),
+        confirmText: 'yes'.translate(),
+        cancelText: 'no'.translate(),
+        onConfirm: () {
+          context.pop(true);
+        },
+        onCancel: () {
+          context.pop(false);
+        },
+        buttonTextStyle:
+            context.buttonTextStyle.copyWith(color: context.primaryColor),
+        titleStyle: context.titleMedium!.copyWith(fontWeight: FontWeight.bold),
+      );
+      if (isConfirmed!) {
+        context.read<OrderViewBloc>().add(SaveOrderEvent(context));
+      }
+    } else {
+      context.showWarningSnackBar('picked_alert'.translate());
     }
   }
+
   /// Shows the details of an order item.
   _onShowItem(BuildContext context, OrderItemModel item) async {
+    print(item.status);
     final loginState = context.read<LoginBloc>().state;
-    if (loginState is LoggedIn) {
-      context.showBottomSheet(
+    final orderViewState = context.read<OrderViewBloc>().state;
+    if (loginState is LoggedIn && orderViewState is OrderViewLoaded) {
+      final value = await context.showBottomSheet(
         ProductBottomSheet(
+          itemIndex: orderViewState.items.indexOf(item),
+          isLocked: isChecked.value,
           rootContext: context,
           itemISPicked: false,
           item: item,
@@ -60,6 +134,31 @@ class OrderItemViewScreen extends StatelessWidget {
       );
     }
   }
+
+  _listenOrderViewBloc(BuildContext context, OrderViewState state) {
+    if (state is OrderSaved) {
+      context.read<OrderViewBloc>().add(ClearOrderViewEvent());
+      context.showSuccessSnackBar(state.message);
+      context.read<OrderBloc>().add(LoadOrderEvent(dateTime: DateTime.now()));
+    } else if (state is OrderViewLoaded) {
+      final checkStatusList = context
+          .read<LoginBloc>()
+          .state
+          .credential!
+          .userCredential!
+          .deviceSetting!
+          .checkStatusList;
+
+      final unpickedItems = state.items
+          .where((element) => element.status == checkStatusList.first)
+          .toList();
+
+      if (unpickedItems.isNotEmpty) {
+        isChecked.value = false;
+      }
+    }
+  }
+
   /// Scans a barcode and displays the scanned item details.
   Future<void> scanBarcode(BuildContext context) async {
     String barcodeScanRes;
@@ -80,7 +179,7 @@ class OrderItemViewScreen extends StatelessWidget {
         final scannedItem =
             item.where((element) => element.barCode == barcodeScanRes);
         if (scannedItem.isEmpty) {
-          context.showErrorSnackBar('item_alert'.tr());
+          context.showErrorSnackBar('item_alert'.translate());
         } else {
           _onShowItem(_scaffoldKey.currentContext!, scannedItem.first);
         }
@@ -90,33 +189,42 @@ class OrderItemViewScreen extends StatelessWidget {
       // You may choose to show a different message or take appropriate action here
     }
   }
+
   /// Shows a leave alert based on order and login status.
-  void _leaveAlert(BuildContext context) {
-    final loginState = context.read<LoginBloc>().state;
-
-    final orderViewState = context.read<OrderViewBloc>().state;
-
-    if (orderViewState is OrderViewLoaded &&
-        orderViewState.order.status ==
-            loginState.credential!.userCredential!.deviceSetting!
-                    .productCheckStartingStatus! +
-                1) {
-      context.showAlert(
-        title: 'page_leave_title'.tr(),
-        cancelText: 'no'.tr(),
-        onCancel: () => context.pop(),
-        confirmText: 'yes'.tr(),
-        onConfirm: () {
-          context.pop();
-          context.pop();
+  Future<void> _leaveAlert(BuildContext context) async {
+    final loginBloc = context.read<LoginBloc>();
+    final orderViewBloc = context.read<OrderViewBloc>();
+    final startingStatus = loginBloc.state.credential!.userCredential!
+        .deviceSetting!.productCheckStartingStatus!;
+    if (orderViewBloc.state is OrderViewLoaded) {
+      if (orderViewBloc.state.order!.status == startingStatus) {
+        bool? isConfirm = await context.showAlert(
+          title: 'page_leave_title'.translate(),
+          cancelText: 'no'.translate(),
+          onCancel: () {
+            context.pop();
+          },
+          confirmText: 'yes'.translate(),
+          onConfirm: () {
+            context.go(Routes.HOME);
+          },
+          buttonTextStyle:
+              context.buttonTextStyle.copyWith(color: context.primaryColor),
+          titleStyle:
+              context.titleMedium!.copyWith(fontWeight: FontWeight.bold),
+        );
+        print(isConfirm);
+        if (isConfirm != null && isConfirm) {
           context.read<OrderViewBloc>().add(ClearOrderViewEvent());
-        },
-        buttonTextStyle:
-            context.buttonTextStyle.copyWith(color: context.primaryColor),
-        titleStyle: context.titleMedium!.copyWith(fontWeight: FontWeight.bold),
-      );
+          context.go(Routes.HOME);
+        }
+      } else {
+        context.read<OrderViewBloc>().add(ClearOrderViewEvent());
+        context.go(Routes.HOME);
+      }
     } else {
-      context.pop();
+      context.read<OrderViewBloc>().add(ClearOrderViewEvent());
+      context.go(Routes.HOME);
     }
   }
 
@@ -129,8 +237,19 @@ class OrderItemViewScreen extends StatelessWidget {
       },
       child: Scaffold(
         key: _scaffoldKey,
-        appBar: CustomAppBar(
-            searchBar: CustomSearchBar(
+        appBar: AppBarContainer(
+            leading: [
+              BackButton(),
+              kWidth8,
+              IconButtonWidget(
+                icon: Icons.qr_code,
+                onTap: () {
+                  scanBarcode(context);
+                },
+                size: 30,
+              ),
+            ],
+            center: CustomSearchBar(
               onClear: () {
                 context.read<OrderViewBloc>().add(SearchItemEvent(keyword: ''));
               },
@@ -141,64 +260,98 @@ class OrderItemViewScreen extends StatelessWidget {
                     .add(SearchItemEvent(keyword: value));
               },
             ),
-            // leading: BackButton(),
-            actions: [
-              IconButtonWidget(
-                icon: Icons.qr_code,
-                onTap: () {
-                  scanBarcode(context);
-                },
-                size: 30,
-              ),
-              kWidth4,
-              IconButtonWidget(
-                onTap: () {},
-                icon: Icons.sort_outlined,
-                size: 30,
-              ),
-              kWidth12
-            ]),
-        body: Column(
-          children: [
-            BlocConsumer<OrderViewBloc, OrderViewState>(
-              listener: (context, state) {
-                if (state is OrderSaved) {
-                  context.read<OrderViewBloc>().add(ClearOrderViewEvent());
-                  context.showSuccessSnackBar(state.message);
-                  context
-                      .read<OrderBloc>()
-                      .add(LoadOrderEvent(dateTime: DateTime.now()));
-                  context.pop();
-                } else if (state is OrderViewLoaded &&
-                    state.unPickedItemsForPicker.isNotEmpty) {
-                  isChecked.value = false;
-                }
-              },
-              builder: (context, state) {
-                if (state is OrderViewLoaded) {
-                  return DocNumberSection(
-                    docNum: state.order.docNumber,
-                    formattedDate: state.order.formattedDate,
+            action: [
+              ValueListenableBuilder<String>(
+                valueListenable: sort,
+                builder: (context, selectedValue, child) {
+                  return PopupMenuButton<String>(
+                    icon: Icon(Icons.sort_outlined),
+                    initialValue: selectedValue,
+                    onSelected: (String value) {
+                      sort.value = value;
+                      context.read<OrderViewBloc>().add(SortItemsEvent(sortBy: value));
+                    },
+                    itemBuilder: (BuildContext context) {
+                      return sorting_elements.map((e) {
+                        return PopupMenuItem<String>(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(e),
+                              if (e == selectedValue)
+                                Icon(
+                                  Icons.check,
+                                  color: Colors.blue,
+                                ),
+                            ],
+                          ),
+                          value: e,
+                        );
+                      }).toList();
+                    },
                   );
-                }
-                return const SizedBox();
-              },
-            ),
-            const HeaderSectionContainer(),
-            Container(
-              height: 1,
-              color: Colors.grey,
-            ),
-            BlocBuilder<OrderViewBloc, OrderViewState>(
-              builder: (context, state) {
-                if (state is OrderViewLoading) {
-                  return const Center(child: CircularProgressWidget());
-                } else if (state is OrderViewLoaded) {
+                },
+              )
+
+            ]),
+        // CustomAppBar(
+        //     searchBar: CustomSearchBar(
+        //       onClear: () {
+        //         context.read<OrderViewBloc>().add(SearchItemEvent(keyword: ''));
+        //       },
+        //       height: 40,
+        //       onSearch: (value) {
+        //         context
+        //             .read<OrderViewBloc>()
+        //             .add(SearchItemEvent(keyword: value));
+        //       },
+        //     ),
+        //     // leading: BackButton(),
+        //     actions: [
+        //       IconButtonWidget(
+        //         icon: Icons.qr_code,
+        //         onTap: () {
+        //           scanBarcode(context);
+        //         },
+        //         size: 30,
+        //       ),
+        //       kWidth4,
+        //       IconButtonWidget(
+        //         onTap: () {},
+        //         icon: Icons.sort_outlined,
+        //         size: 30,
+        //       ),
+        //       kWidth12
+        //     ]),
+        body: SafeArea(
+          child: Column(
+            children: [
+              BlocConsumer<OrderViewBloc, OrderViewState>(
+                listener: _listenOrderViewBloc,
+                builder: (context, state) {
+                  return DocNumberSection(
+                    docNum: state.order != null ? state.order!.docNumber : "",
+                    formattedDate:
+                        state.order != null ? state.order!.formattedDate : "",
+                  );
+
+                  return const SizedBox();
+                },
+              ),
+              const HeaderSectionContainer(),
+              Container(
+                height: 1,
+                color: Colors.grey,
+              ),
+              BlocBuilder<OrderViewBloc, OrderViewState>(
+                builder: (context, state) {
                   return Expanded(
                     child: ListView.builder(
                         itemBuilder: (context, index) {
                           OrderItemModel orderItem = state.searchResults[index];
+
                           return OrderItemTile(
+                            order: state.order!,
                             orderItem: orderItem,
                             onTap: () {
                               _onShowItem(
@@ -209,19 +362,10 @@ class OrderItemViewScreen extends StatelessWidget {
                         },
                         itemCount: state.searchResults.length),
                   );
-                } else if (state is OrderViewEmpty) {
-                  return Center(
-                    child: EmptyWidget(
-                        headingText: 'empty_item_title'.tr(),
-                        subHeadingText: 'empty_item_text'.tr()),
-                  );
-                } else {
-                  return const SizedBox();
-                }
-                return Container();
-              },
-            ),
-          ],
+                },
+              ),
+            ],
+          ),
         ),
         bottomNavigationBar: BottomAppBar(
           elevation: 10,
@@ -249,32 +393,8 @@ class OrderItemViewScreen extends StatelessWidget {
                             activeColor: context.primaryColor,
                             value: value,
                             onChanged: (value) {
-                              final starting_status = context
-                                  .read<LoginBloc>()
-                                  .state
-                                  .credential!
-                                  .userCredential!
-                                  .deviceSetting!
-                                  .productCheckStartingStatus;
-                              if (state.order.status == starting_status! + 1) {
-                                if (starting_status == 30) {
-                                  if (state.unPickedItemsForPicker.isEmpty) {
-                                    isChecked.value = value;
-                                  } else {
-                                    context.showWarningSnackBar(
-                                        '${state.unPickedItemsForPicker.length} ${"items_remaining".tr()}');
-                                  }
-                                } else {
-                                  if (state.unPickedItemsForChecker.isEmpty) {
-                                    isChecked.value = value;
-                                  } else {
-                                    context.showWarningSnackBar(
-                                        '${state.unPickedItemsForChecker.length} ${"items_remaining".tr()}');
-                                  }
-                                }
-                              } else {
-                                context.showWarningSnackBar('saved_order'.tr());
-                              }
+                              _switchConfirmValue(
+                                  context: context, state: state, value: value);
                             },
                           );
                         },
@@ -282,21 +402,68 @@ class OrderItemViewScreen extends StatelessWidget {
                     } else {
                       return SwitchWidget(
                         activeColor: Colors.black,
-                        value: false,
+                        value: isChecked.value,
                         onChanged: (value) {},
                       );
                     }
                   },
                 ),
+                BlocBuilder<OrderViewBloc, OrderViewState>(
+                  builder: (context, state) {
+                    if (state is OrderViewLoaded) {
+                      final endingStatus = context
+                          .read<LoginBloc>()
+                          .state
+                          .credential!
+                          .userCredential!
+                          .deviceSetting!
+                          .productCheckEndingStatus;
+                      return PrintButton(
+                        isEnabled: state.order!.status! >=endingStatus!,
+                        onTap: () {
+                          context.showAlert(
+                            title: "print_order".translate(),
+                            confirmText: 'yes'.translate(),
+                            cancelText: 'no'.translate(),
+                            onConfirm: () {
+                              context
+                                  .read<OrderViewBloc>()
+                                  .add(PrintOrderLabelEvent(context: context));
 
-                IconButton(onPressed: () {
-                  context.read<SettingsBloc>().add(PrintEvent(context: context));
-                }, icon: Icon(Icons.print,color: Colors.black,)),
+                              context.pop();
+                            },
+                            onCancel: () {
+                              context.pop();
+                            },
+                            buttonTextStyle: context.buttonTextStyle
+                                .copyWith(color: context.primaryColor),
+                            titleStyle: context.titleMedium!
+                                .copyWith(fontWeight: FontWeight.bold),
+                          );
+                        },
+                      );
+                    } else {
+                      return SizedBox();
+                    }
+                  },
+                ),
                 ValueListenableBuilder(
                   valueListenable: isChecked,
                   builder: (context, value, child) {
-                    return SaveButton(
-                        onTap: value ? () => _saveOrder(context) : null);
+                    return BlocBuilder<OrderViewBloc, OrderViewState>(
+                      builder: (context, state) {
+                        if (state is OrderViewLoading) {
+                          return SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressWidget());
+                        } else {
+                          return SaveButton(
+                              onTap: value ? () => _saveOrder(context) : null);
+                        }
+                        return SizedBox();
+                      },
+                    );
                   },
                 ),
               ],

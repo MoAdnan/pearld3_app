@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pearld3_authentication/pearld3_authentication.dart';
 import 'package:pearld3_states/blocs.dart';
 import 'package:pearld3_util/pearld3_util.dart';
 import 'package:pearld3_views/pearld3_views.dart';
@@ -10,9 +11,9 @@ class LogoutButton extends StatelessWidget {
   const LogoutButton({super.key});
   void _logout(BuildContext context) async {
     context.showAlert(
-      title: 'logout_warning'.tr(),
-      confirmText: 'yes'.tr(),
-      cancelText: 'no'.tr(),
+      title: 'logout_warning'.translate(),
+      confirmText: 'yes'.translate(),
+      cancelText: 'no'.translate(),
       onConfirm: () {
         context.pop();
         context.read<LoginBloc>().add(LogOut(context));

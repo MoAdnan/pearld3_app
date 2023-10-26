@@ -12,12 +12,12 @@ dependencies:
     sdk: flutter
   dartz: ^0.10.1
   pearld3_models:
-    path: ../pearld3_models
+    path: ../../../packages/pearld3_models
   pearld3_util:
-    path: ../pearld3_util
+    path: ../../../packages/pearld3_util
   shared_preferences: ^2.1.2
   pearld3_services:
-    path: ../pearld3_services
+    path: ../../../packages/pearld3_services
 
 dev_dependencies:
   flutter_test:

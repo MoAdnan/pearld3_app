@@ -20,20 +20,20 @@ class RemoveMeBottomSheet extends StatelessWidget {
               children: [
                 kHeight28,
                 Text(
-                  'reset_warning'.tr(),
+                  'reset_warning'.translate(),
                   style: context.bodyLarge!
                       .copyWith(color: Colors.black, fontSize: 20),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    "${"remove_warning_text".tr()} :",
+                    "${"remove_warning_text".translate()} :",
                     style: context.bodyExtraSmall!.copyWith(fontSize: 15),
                   ),
                 ),
                 kHeight28,
                 Text(
-                  'remove_warning_title'.tr(),
+                  'remove_warning_title'.translate(),
                 ),
                 kHeight28,
                 kHeight32,
@@ -42,7 +42,7 @@ class RemoveMeBottomSheet extends StatelessWidget {
                 ButtonWidget(
                     width: 300,
                     color: Colors.red,
-                    buttonText: 'yes,remove'.tr(),
+                    buttonText: 'yes,remove'.translate(),
                     onTap: () {
                       Navigator.pop(context);
                     })

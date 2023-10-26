@@ -60,6 +60,6 @@ void main() async {
     path: 'assets/lang', // Specify the path to your localization files
     fallbackLocale: const Locale('en', 'US'),
     assetLoader: HttpAssetLoader(),
-    child: const App(),
+    child:  App(),
   ));
 }
